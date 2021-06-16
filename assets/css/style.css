@@ -1,0 +1,35 @@
+.header {
+    font-family: Lucida Console,Lucida Sans Typewriter,monaco,Bitstream Vera Sans Mono,monospace;
+    margin: 1px;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    background: rgb(254,255,0);
+    background: linear-gradient(90deg, rgba(254,255,0,1) 0%, rgba(0,195,27,1) 0%, rgba(0,255,239,1) 48%, rgba(9,9,121,1) 100%);
+}
+
+h2 {
+    margin: 0%;
+    text-align: center;
+    font-size: 60px;
+    font-weight: 600;
+    color: cornsilk;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
+
+html {
+    background-color: #93E9BE;
+}
+
+.main-content {
+    margin-left: 15%;
+    margin-right: 15%;
+    padding-top: 20px;
+    padding-bottom: 25%;
+    background-color: whitesmoke;
+    text-align: center;
+}
+
+#canvas {
+    padding-top: 5%;
+}
