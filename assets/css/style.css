@@ -31,5 +31,12 @@ html {
 }
 
 #canvas {
-    padding-top: 5%;
+    padding-top: 2%;
+}
+
+#green-starting-pop {
+    width: 5%;
+}
+#playback-settings {
+    margin-top: 1%;
 }
