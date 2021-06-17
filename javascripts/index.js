@@ -70,7 +70,7 @@ const drawGrid = function(){
 }
 
 const drawEater = () => {
-    let eater = new PIXI.Sprite(eaterTexture);
+    // let eater = new PIXI.Sprite(eaterTexture);
 }
 
 
