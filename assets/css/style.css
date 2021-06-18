@@ -28,15 +28,20 @@ html {
     padding-bottom: 25%;
     background-color: whitesmoke;
     text-align: center;
+    
 }
 
 #canvas {
     padding-top: 2%;
 }
 
-#green-starting-pop {
+.input-box {
     width: 5%;
 }
 #playback-settings {
     margin-top: 1%;
 }
+/* #gridConfig {
+    display: flex;
+    justify-content: center;
+} */
