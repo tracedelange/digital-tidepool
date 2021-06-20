@@ -1,11 +1,11 @@
 const width = (window.innerWidth)/3
 const height = width
-const gridScale = 50
+const gridScale = 20
 const margin = 1
 
 const lineSpacing = Math.floor(height/gridScale)
 
-const frameRate = 1000/20
+const frameRate = 1000/2
 
 const green = "93E9BE"
 const background = "E2FAB5"
