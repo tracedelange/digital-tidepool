@@ -1,18 +1,31 @@
-const width = (window.innerWidth)/3
-const height = width
-const gridScale = 20
+const width = document.body.clientWidth
+const height = document.body.clientHeight
+// const width = (window.screen.width)*.95
+// const height = (window.screen.height)*.8
+const gridScale = 50
 const margin = 1
-
+const html = document.getElementsByTagName('html')[0]
 const lineSpacing = Math.floor(height/gridScale)
 
-const frameRate = 1000/2
+const numRows = gridScale
+const numCols = (width/lineSpacing) - 1
+
+const frameRate = 1000/20
+
+//1980x1080 most common screen size apparently 
 
 const green = "93E9BE"
 const background = "E2FAB5"
 
 //Creature constants
-const greenGrowthRate = .2
+const greenGrowthRate = .1
+
 const eaterPerception = 10 //measure of how many blocks the eaters can scan in search of a green
+const eaterScale = 1
+const eaterLifespan  = 200 //measure of how many frames an eater survives before death
+const eaterDeathChance = .01
+const eaterReproductionRate = .5
+
 
 // DOM item declarations
 const canvasDiv = document.getElementById('canvas')
@@ -24,6 +37,8 @@ const configSubmitButton = document.getElementById('config-submission-button')
 const pauseButton = document.getElementById('pause')
 const resumeButton = document.getElementById('resume')
 const resetButton = document.getElementById('reset')
+
+
 
 
 
@@ -40,7 +55,7 @@ let app = new PIXI.Application({
     // height: height,
     width: width, 
 	height: height,
-	autoResize: true,
+	autoResize: false,
     backgroundColor: 0xE2FAB5,
     // resizeTo: window
 
@@ -79,18 +94,20 @@ const drawSquare = (x,y,color) => {
 }
 
 const drawGrid = function(){
-    for (let i = 0; i<gridScale; i++){
-        drawLine((lineSpacing) + ((lineSpacing)*i)+1,0,lineSpacing + ((lineSpacing)*i)+1,height)
+    for (let i = 0; i < numRows + 1; i++){
         drawLine(0,lineSpacing + (lineSpacing*i)+1,width,lineSpacing + (lineSpacing*i)+1)
+    }
+    for (let i = 0; i < numCols; i++){
+        drawLine((lineSpacing) + ((lineSpacing)*i)+1,0,lineSpacing + ((lineSpacing)*i)+1,height)
     }
 }
 
 //Grid manipulation
 const generateGrid = function(gridScale){
     const grid = []
-    for (let i = 0; i < gridScale; i++){
+    for (let i = 0; i < numCols; i++){
         grid.push([])
-        for (let x = 0; x < gridScale; x++){
+        for (let x = 0; x < numRows; x++){
             grid[i].push([0])
         }
     }
@@ -98,8 +115,8 @@ const generateGrid = function(gridScale){
 }
 
 const populateGridInital = (color) => {
-    let x = Math.floor(Math.random()*gridScale)
-    let y = Math.floor(Math.random()*gridScale)
+    let x = Math.floor(Math.random()*numCols)
+    let y = Math.floor(Math.random()*numRows)
     setGridArray(x,y,0,1)
     drawGreenSprite(x,y)
     // drawSquare(x,y,color)
@@ -128,27 +145,7 @@ const scanArea = (id, range, target) => {
         if (Math.abs(bx-gx) < range && Math.abs(by-gy) < range){
            return gx,gy
         }
-
-        // console.log(green.id[0])
-        // // console.log(id)
     })
-    
-
-    // //loop over the grid in the range of perception
-
-    // let targetsInArea = []
-    // for (let xp = -range; xp < range+1; xp++){
-    //     for (yp = -range; yp < range+1; yp++){
-    //         // console.log(`scanning square ${x+xp}, ${y+yp}`)
-    //         try { if (grid[x+xp][y+yp][0] == target){
-    //             targetsInArea.push([x+xp, y+yp])
-
-    //         }}
-    //         catch (e) { }
-            
-    //     }
-    // }
-    // console.log(targetsInArea)
 }
 
 //Green Functions
@@ -211,8 +208,8 @@ const reproduceGreen = (x,y, id) => {
 //Eater Functions
 const populateEaters = (n) => {
     for (let i = 0; i < n; i++){
-        let x = Math.floor(Math.random()*gridScale)
-        let y = Math.floor(Math.random()*gridScale)
+        let x = Math.floor(Math.random()*numCols)
+        let y = Math.floor(Math.random()*numRows)
         setGridArray(x,y,0,2)
         drawEater(x,y)
     }
@@ -223,17 +220,42 @@ const drawEater = (x,y) => {
 
     let eater = new PIXI.Sprite(PIXI.loader.resources["./assets/images/eater.png"].texture);    
 
-    eater.width = lineSpacing - margin
-    eater.height = lineSpacing - margin
+    eater.width = (lineSpacing - margin)*eaterScale
+    eater.height = (lineSpacing - margin)*eaterScale
     
     eater.x = (lineSpacing+margin) + ((lineSpacing)*(x-1));
     eater.y = (lineSpacing+margin) + ((lineSpacing)*(y-1)) + margin;
+
+    eater.age = 0
 
     eater.id = `${x},${y}`
     
     app.stage.addChild(eater);
     eaters.push(eater)
 }
+
+const manageAge = (eater) => {
+    eater.age = eater.age + 1
+    // console.log(eater.age)
+
+    if (eater.age > eaterLifespan) { //Make death saving rolls
+        if (Math.random() < eaterDeathChance) {
+            let eaterIndex = eaters.findIndex((entry) => entry.id === eater.id)
+            // console.log(greensIndex)
+
+            let X = parseInt(eater.id.split(',')[0])
+            let Y = parseInt(eater.id.split(',')[1])
+
+            grid[X][Y][0] = 0
+            eaters.splice(eaterIndex, 1)
+
+            
+            app.stage.removeChild(eater)
+        }
+
+    }
+}
+
 
 const moveEater = (eater) => {
     // console.log('tick')
@@ -245,11 +267,6 @@ const moveEater = (eater) => {
     //If target is defined, let x and y mod direct towards target, else set x and y mod to random 
     if (eater.target !== undefined){
         //move towards target
-
-        // console.log(parseInt(eater.target.split(',')[0]))
-        // let dis = Math.hypot(parseInt(eater.target.split(',')[0])-x, parseInt(eater.target.split(',')[1])-y)
-        // console.log(dis)
-
         //calculate distance from each square to target and move to the square with the lowest distance.
 
         let targetX = parseInt(eater.target.split(',')[0])
@@ -287,6 +304,7 @@ const moveEater = (eater) => {
     }
 
 
+
     //Quick test to determine if destination location is not out of upper-bounds
     if (x+xMod > grid.length -1 || y+yMod > grid.length-1){
         xMod = 0
@@ -297,6 +315,12 @@ const moveEater = (eater) => {
         xMod = 0
         yMod = 0
     }
+    //Test if new desination location is already occupied by an eater. 
+    if (grid[x+xMod][y+yMod][0] === 2) {
+        yMod = 0
+        xMod = 0
+    }
+
 
     //update the eaters X and Y position and then update the ID to reflect its position
     
@@ -326,6 +350,13 @@ const moveEater = (eater) => {
     setGridArray(x, y, 0, 0)
     setGridArray(x+xMod, y+yMod, 0, 2)
 
+    // for (let hor = 0; hor <= eaterScale; hor++) {
+    //     for (let vert = 0; vert < eaterScale; vert++) {
+    //         // console.log(x+hor, y+vert)
+    //         setGridArray(x+hor, y+vert, 0, 2)
+    //     }
+    // }
+
     // console.log(xMod)
     // console.log(yMod)
 
@@ -333,16 +364,19 @@ const moveEater = (eater) => {
 
         eater.target = undefined;
     }
+}
 
-    // console.log(typeof(eater.id), typeof(eater.target))
+const reproduceEater = (eater) => {
+    //if eater is within the middle third of its total lifespan, roll a small chance for reproduction
+    if (eater.age > (eaterLifespan*(1/3)) && eater.age < (eaterLifespan*(2/3))) {
+        if (Math.random() < eaterReproductionRate) {
 
-    // if (eater.id === eater.target){
-    //     eater.target = undefined
-    // }
-    
-    // console.log(`eater at ${eater.id} moved from ${x,y} to ${x+xMod, y+yMod}`)
-    // console.log(`grid values at start point: ${grid[x][y][0]}`)
-    // console.log(`grid values at ending point: ${grid[x+xMod][y+yMod]}`)
+            
+        }
+
+
+    }
+
 }
 
 //Given an eater sprite object, scan the area and choose a target for the eater. If no target is found, set target attribute to = ''.
@@ -355,7 +389,10 @@ const searchForPrey = (eater) => {
         let prey = scanArea(eater.id, eaterPerception, 1)
         // console.log(prey.id)
         if (prey !== undefined){
+            console.log(prey)
             eater.target = prey.id
+            // eater.target = prey[Math.floor(Math.random()*prey.length)-1].id
+            // console.log(prey)
             // console.log(eater.target)
         }
     }
@@ -396,6 +433,8 @@ const gameLoop = () => {
             
             searchForPrey(eater);
             moveEater(eater);
+            manageAge(eater)
+            reproduceEater(eater)
             
         })
         
@@ -412,23 +451,7 @@ const gameLoop = () => {
             catch (e) {}//console.log(e)}
 
         })
-
-
-        // for (let x = 0; x < grid.length; x++){
-        //     for (let y = 0; y < grid.length; y++){
-        //         //carry out functions if given square is green
-        //         if (gridSnapShot[x][y][0] == 1){
-        //             try { reproduceGreen(x,y, gridSnapShot) }
-        //             catch (e) {}
-        //         }
-        //     }
-        // }
-        
-        
     }
-    
-    
-    
 }
 
 const pauseSim = () => {

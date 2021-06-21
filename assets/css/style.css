@@ -30,18 +30,48 @@ html {
     text-align: center;
     
 }
-
+/* 
 #canvas {
     padding-top: 2%;
-}
+} */
 
 .input-box {
     width: 5%;
 }
-#playback-settings {
-    margin-top: 1%;
-}
-/* #gridConfig {
+/* #playback-settings {
+    margin-top: %;
+} */
+
+#gridConfig { 
     display: flex;
     justify-content: center;
-} */
+}  
+
+html, body {
+    margin: 0px;
+}
+
+#canvas {
+
+    background: red;
+    height: 80vh;
+
+    /* margin-top: 2%; */
+    top: 2%;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+
+    
+}
+
+.box {
+    margin-bottom: 2%;
+    /* padding: 2%; */
+    text-align: center;
+    background: #1abc9c;
+    /* color: white; */
+    /* font-size: 30px; */
+
+}
+
