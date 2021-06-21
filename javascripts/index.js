@@ -18,15 +18,15 @@ const green = "93E9BE"
 const background = "E2FAB5"
 
 //Creature constants
-const greenGrowthRate = .03
+const greenGrowthRate = .08
 
 const eaterPerception = 10 //measure of how many blocks the eaters can scan in search of a green
 const eaterScale = 1
-const eaterLifespan  = 200 //measure of how many frames an eater survives before death
+const eaterLifespan  = 300 //measure of how many frames an eater survives before death
 const eaterDeathChance = .01
-const eaterReproductionRate = .01
+const eaterReproductionRate = .05
 const eaterGestationPeriod = 50
-const eaterNutrientRequirement = 50
+const eaterNutrientRequirement = 25
 
 
 // DOM item declarations
@@ -39,11 +39,16 @@ const configSubmitButton = document.getElementById('config-submission-button')
 const pauseButton = document.getElementById('pause')
 const resumeButton = document.getElementById('resume')
 const resetButton = document.getElementById('reset')
+const aboutButton = document.getElementById('about')
+const guide = document.getElementById('guide')
 
 const greenPop = document.getElementById('green-pop')
 const eaterPop = document.getElementById('eater-pop')
 const greenEaterRatio = document.getElementById('green-eater-ratio')
 const averageGen = document.getElementById('average-eater-generation')
+
+
+
 
 
 const eaters = [];
@@ -52,6 +57,9 @@ const messages = [];
 
 //Simulation running bool
 let running = false
+
+//Guide page visible bool
+let guideVisible = false
 
 //Pixi Specific declarations
 let app = new PIXI.Application({
@@ -151,9 +159,11 @@ const generateGrid = function(gridScale){
 const populateGridInital = (color) => {
     let x = Math.floor(Math.random()*numCols)
     let y = Math.floor(Math.random()*numRows)
-    setGridArray(x,y,0,1)
-    drawGreenSprite(x,y)
-    // drawSquare(x,y,color)
+
+    if (grid[x][y][0] === 0){
+        setGridArray(x,y,0,1)
+        drawGreenSprite(x,y)
+    }
 }
 
 const setGridIndex = (x,y,color,id) => {
@@ -185,10 +195,7 @@ const scanAreaForNewEater = (id) => {
             }
         }
     }
-
-
 }
-
 
 const scanAreaForGreens = (id, range) => {
     //Alternate approach: Filter through the list of greens and determine which are closest. OR Use .find to determine the first green that satisfies the callback
@@ -275,8 +282,11 @@ const populateEaters = (n) => {
     for (let i = 0; i < n; i++){
         let x = Math.floor(Math.random()*numCols)
         let y = Math.floor(Math.random()*numRows)
-        setGridArray(x,y,0,2)
-        drawEater(x,y)
+
+        if (grid[x][y][0] === 0) {
+            setGridArray(x,y,0,2)
+            drawEater(x,y)
+        }
     }
 }
 
@@ -419,6 +429,8 @@ const moveEater = (eater) => {
     if (grid[x+xMod][y+yMod][0] === 1){
         // console.log('moving into occupied green space')
 
+        
+
         //if the space about to be occupied by an eater is currently occupied by a green,
         //remove the green from the canvas.
         let greenId = `${x+xMod},${y+yMod}`
@@ -427,6 +439,10 @@ const moveEater = (eater) => {
         })
         let greensIndex = greens.findIndex((green) => green.id === greenId)
         // console.log(greensIndex)
+
+        // console.log(eater.id, ' eater')
+        // console.log(green.id, ' green')
+
         greens.splice(greensIndex, 1)
         app.stage.removeChild(green)
 
@@ -451,7 +467,7 @@ const moveEater = (eater) => {
     // console.log(yMod)
 
     if (xMod === 0 && yMod === 0){
-
+        // console.log('new Target')
         eater.target = undefined;
     }
 }
@@ -462,7 +478,7 @@ const reproduceEater = (eater) => {
     // console.log('reproducing function running')
     if (eater.gestation === undefined) {
         //if eater is within the middle third of its total lifespan and has collected sufficient nutrients, roll a small chance for reproduction
-        if (eater.age > (eaterLifespan*(1/3)) && eater.age < (eaterLifespan*(2/3)) && eater.nutrients > eaterNutrientRequirement) {
+        if (eater.age > (eaterLifespan*(1/3)) && eater.nutrients > eaterNutrientRequirement) {
             // console.log('able to reproduce')
             if (Math.random() < eaterReproductionRate) {
                 
@@ -502,6 +518,7 @@ const searchForPrey = (eater) => {
 
     if (eater.target === undefined){
         let prey = scanAreaForGreens(eater.id, eaterPerception)
+        // console.log(eater)
         // console.log(prey)
 
         if (prey.length !== 0){
@@ -557,7 +574,8 @@ const checkForExtinction = () => {
         // pauseSim()
         if (messages.length === 0){
             const doomMessage = new PIXI.Text('Greens have gone extinct. As a result, all eaters will starve.', messageStyle)
-            doomMessage.position.set(width/4, height/2)
+            doomMessage.x = app.stage.width / 3 + 10
+            doomMessage.y = app.stage.height / 2 - 18  
             messages.push(doomMessage)
             app.stage.addChild(doomMessage)
         }
@@ -574,7 +592,9 @@ const checkForExtinction = () => {
     } else if (eaters.length === 0) {
         if (messages.length === 0) {
             const doomMessage = new PIXI.Text('Eaters have gone extinct. As a result, Greens will dominate the tidepool unchecked.', messageStyle)
-            doomMessage.position.set(width/4, height/2)
+            // doomMessage.position.set(width/4, height/2)
+            doomMessage.x = app.stage.width / 3 + 10
+            doomMessage.y = app.stage.height / 2 - 18  
             messages.push(doomMessage)
             app.stage.addChild(doomMessage)
         }
@@ -588,10 +608,8 @@ const checkForExtinction = () => {
 }
 
 const pauseSim = () => {
-    
     //Update running variable to false to stop the game loop
     running = false
-    
     //Update buttons to allow either sim reset or resume
     pauseButton.disabled = true
     resumeButton.disabled = false
@@ -600,15 +618,24 @@ const pauseSim = () => {
 
 const resumeSim = () => {
     running = true
-    
     pauseButton.disabled = false
     resumeButton.disabled = true
     resetButton.disabled = true
 }
 const resetSim = () => {
-    
     location.reload()
-    
+}
+
+const displayAbout = () => {
+    if (guideVisible){
+        guide.style.display = 'none';
+        // resumeSim()
+        guideVisible = false
+    } else {
+        guide.style.display = 'inline';
+        // pauseSim()
+        guideVisible = true
+    }
 }
 
 const addButtonListeners = () => {
@@ -621,6 +648,9 @@ const addButtonListeners = () => {
     resetButton.addEventListener('click', function (){
         resetSim()
     })
+    aboutButton.addEventListener('click', function(){
+        displayAbout()
+    } )
 }
 
 const gameLoop = () => {
