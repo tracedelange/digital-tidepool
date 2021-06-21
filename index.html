@@ -6,63 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Tidepool</title>
 </head>
-
 <body>
-    
     <!-- <div class="header">
         <h2>The Digital Tidepool</h2>
     </div> -->
-    <!-- <div class="main-content" id='main-content'> -->
-        <!-- <p>Let's get muddy</p> -->
-        <!-- <button id="colorRandom">Click me</button> <button id="reset">reset</button> -->
-        
-        <!-- <form action="#" id="gridConfig">
-            <label for="green-starting-pop">Inital Population Size of Green Dudes: </label>
-            <input class='input-box' type="number" id="green-starting-pop" placeholder='10' value="10">
-            <br>
-            <label for="eater-starting-pop">Inital Population Size of Blue Eater Dudes: </label>
-            <input class='input-box' type="number" id="eater-starting-pop" placeholder='1' value="1">
-            <br>
-            <button type="submit" id='config-submission-button'>Populate Grid and Start Sim</button>
-            
-        </form> -->
-        
-        
         <div class='box'>
             <form action="#" id="gridConfig">
                 <label for="green-starting-pop">Inital Population Size of Green Dudes: </label>
                 <input class='input-box' type="number" id="green-starting-pop" placeholder='10' value="10">
                 <br>
                 <label for="eater-starting-pop">Inital Population Size of Blue Eater Dudes: </label>
-                <input class='input-box' type="number" id="eater-starting-pop" placeholder='1' value="1">
+                <input class='input-box' type="number" id="eater-starting-pop" placeholder='10' value="10">
                 <br>
                 <button type="submit" id='config-submission-button'>Populate Grid and Start Sim</button>
-                
             </form>
             <div id="playback-settings">
-                
                 <button id='pause' disabled='true'>Pause</button>
                 <button id='resume' disabled='true'>Resume</button>
                 <button id='reset' disabled='true'>Reset</button> 
                 
             </div>
-            <!-- <div class="dropdown">
-                <button class="dropbtn">Dropdown</button>
-                <div class="dropdown-content">
-                  <a href="#">Link 1</a>
-                  <a href="#">Link 2</a>
-                  <a href="#">Link 3</a>
-                </div>
-              </div> -->
-
-
+            <div id="stats">
+                <ul>
+                    <li id='green-pop'>Green Population: 0</li>
+                    <li id='eater-pop'>Eater Population: 0</li>
+                    <li id='green-eater-ratio'>Green:Eater Ratio: 0</li>
+                    <li id='average-eater-generation'>Average Eater Generation: 0</li>
+                </ul>
+            </div>
         </div>
         <div id="canvas">
-            
-            
+
         </div>
         
-        <!-- </div> -->
     </body>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="javascripts/pixi.min.js"></script>

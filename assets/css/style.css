@@ -18,7 +18,9 @@ h2 {
 }
 
 html {
-    background-color: #93E9BE;
+    background-color: #005c2d;
+    color: whitesmoke;
+    font-family: Helvetica, sans-serif;
 }
 
 .main-content {
@@ -45,6 +47,7 @@ html {
 #gridConfig { 
     display: flex;
     justify-content: center;
+    /* background: #094b2a; */
 }  
 
 html, body {
@@ -53,7 +56,6 @@ html, body {
 
 #canvas {
 
-    background: red;
     height: 80vh;
 
     /* margin-top: 2%; */
@@ -65,13 +67,33 @@ html, body {
     
 }
 
+#stats {
+    color: white;
+    /* -webkit-text-stroke: 1px black; */
+    font-size: 16px;
+}
+
+#stats li {
+    display: inline;
+    padding-right: 15px;
+    margin: 0%;
+    /* background: #094b2a; */
+    /* padding: 5px */
+}
+
+
+
 .box {
-    margin-bottom: 2%;
+    /* margin-bottom: 2%; */
     /* padding: 2%; */
     text-align: center;
-    background: #1abc9c;
+    /* background: #    094b2a; */
     /* color: white; */
     /* font-size: 30px; */
 
+}
+
+.input-box {
+    margin-right: 1%;
 }
 
