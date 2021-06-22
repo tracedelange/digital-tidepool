@@ -2,7 +2,7 @@ const width = document.body.clientWidth
 const height = document.body.clientHeight
 // const width = (window.screen.width)*.95
 // const height = (window.screen.height)*.8
-const gridScale = 30
+const gridScale = 50
 const margin = 1
 const html = document.getElementsByTagName('html')[0]
 const lineSpacing = Math.floor(height/gridScale)
@@ -182,9 +182,9 @@ const scanAreaForNewEater = (id) => {
 
     for (let xx = -1; xx < 2; xx++){
         for (let yy = -1; yy < 2; yy++){
-            console.log(xx,yy)
-            console.log([Math.abs(xx+pX), Math.abs(yy+pY)])
-            console.log(id)
+            // console.log(xx,yy)
+            // console.log([Math.abs(xx+pX), Math.abs(yy+pY)])
+            // console.log(id)
             // if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)] !== undefined){
                 if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)] !== 2){
                     let cX = Math.abs(xx+pX)
@@ -281,10 +281,19 @@ const sweepOutGreens = () => {
     let ids = eaters.map((eater) => { return eater.id })
     let peskyGreens = greens.filter((green) => { return ids.includes(green.id) })
 
+    if (peskyGreens.length !== 0){
+        debugger;
+    }
     
     peskyGreens.forEach((green) => {
+
+        console.log(green.id)
+
         let greensIndex = greens.findIndex((listedGreen) => green.id === listedGreen.id)
-    
+
+        let X = parseInt(green.id.split(',')[0])
+        let Y = parseInt(green.id.split(',')[1])
+        
         greens.splice(greensIndex, 1)
         app.stage.removeChild(green)
     })
@@ -699,7 +708,7 @@ const gameLoop = () => {
             
         })
         
-        sweepOutGreens()
+        // sweepOutGreens()
         checkForExtinction()
         updateStats()
 
