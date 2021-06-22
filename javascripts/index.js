@@ -20,7 +20,7 @@ const background = "E2FAB5"
 //Creature constants
 const greenGrowthRate = .08
 
-const eaterPerception = 10 //measure of how many blocks the eaters can scan in search of a green
+const eaterPerception = 3 //measure of how many blocks the eaters can scan in search of a green
 const eaterScale = 1
 const eaterLifespan  = 300 //measure of how many frames an eater survives before death
 const eaterDeathChance = .01
@@ -182,17 +182,17 @@ const scanAreaForNewEater = (id) => {
 
     for (let xx = -1; xx < 2; xx++){
         for (let yy = -1; yy < 2; yy++){
-            // console.log(xx,yy)
-            // console.log(grid[xx+pX][yy+pY])
-
-            if (grid[xx+pX][yy+pY] !== undefined){
-                if (grid[xx+pX][yy+pY][0] !== 2){
-                    let cX = xx+pX
-                    let cY = yy+pY
+            console.log(xx,yy)
+            console.log([Math.abs(xx+pX), Math.abs(yy+pY)])
+            console.log(id)
+            // if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)] !== undefined){
+                if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)] !== 2){
+                    let cX = Math.abs(xx+pX)
+                    let cY = Math.abs(yy+pY)
     
                     return [cX, cY]
                 }
-            }
+            // }
         }
     }
 }
@@ -274,6 +274,20 @@ const reproduceGreen = (x,y, id) => {
         }
 
     }
+}
+
+//TODO Find out why this function is nessesary in the first place... patch NOT solution
+const sweepOutGreens = () => {
+    let ids = eaters.map((eater) => { return eater.id })
+    let peskyGreens = greens.filter((green) => { return ids.includes(green.id) })
+
+    
+    peskyGreens.forEach((green) => {
+        let greensIndex = greens.findIndex((listedGreen) => green.id === listedGreen.id)
+    
+        greens.splice(greensIndex, 1)
+        app.stage.removeChild(green)
+    })
 }
 
 
@@ -491,7 +505,7 @@ const reproduceEater = (eater) => {
      } else if (eater.gestation > 0) {
         // console.log(eater.gestation)
         eater.gestation = eater.gestation - 1
-        eater.tint = "0x228B22"
+        eater.tint = "0x5D3FD3"
     } else if (eater.gestation === 0) {
         //birth child and set gestation to undefined
         // console.log('child born')
@@ -672,19 +686,20 @@ const gameLoop = () => {
         })
         
         //Iterate over each green object
-
+        
         //ADVANTAGE - we are no longer iterating over the entire grid each step, now we are only iterating over the arrays containing the elements
         let gridSnapShot = [...grid]
         greens.forEach(function(green){
-
+            
             let x = green.id.split(',')[0]
             let y = green.id.split(',')[1]
-
+            
             try { reproduceGreen(parseInt(x), parseInt(y), `${x},${y}`) }
             catch (e) {}//console.log(e)}
-
+            
         })
-
+        
+        sweepOutGreens()
         checkForExtinction()
         updateStats()
 
