@@ -1,14 +1,16 @@
-const width = document.body.clientWidth
-const height = document.body.clientHeight
+const gridScale = 20
+let width = (document.body.clientWidth)*.96 
+const height = ((document.body.clientHeight)*.95) - (((document.body.clientHeight)*.95) % gridScale)
 // const width = (window.screen.width)*.95
 // const height = (window.screen.height)*.8
-const gridScale = 50
 const margin = 1
 const html = document.getElementsByTagName('html')[0]
 const lineSpacing = Math.floor(height/gridScale)
 
 const numRows = gridScale
-const numCols = (width/lineSpacing) - 1
+const numCols = Math.floor((width/lineSpacing))
+
+width = width - (width % numCols)
 
 const frameRate = 1000/15
 
@@ -26,7 +28,7 @@ const eaterLifespan  = 300 //measure of how many frames an eater survives before
 const eaterDeathChance = .01
 const eaterReproductionRate = .05
 const eaterGestationPeriod = 50
-const eaterNutrientRequirement = 25
+const eaterNutrientRequirement = 35
 
 
 // DOM item declarations
@@ -50,13 +52,15 @@ const averageGen = document.getElementById('average-eater-generation')
 
 
 
-
+//These can be replaced by class objects 
 const eaters = [];
 const greens = [];
 const messages = [];
 
 //Simulation running bool
 let running = false
+
+doomMessageShown = false
 
 //Guide page visible bool
 let guideVisible = false
@@ -76,7 +80,7 @@ let app = new PIXI.Application({
 
 let messageStyle = new PIXI.TextStyle({
     fontFamily: "Times New Roman",
-    fontSize: 36,
+    fontSize: Math.round(width/50),
     fill: "white",
     stroke: 'black',
     strokeThickness: 2,
@@ -179,23 +183,26 @@ const scanAreaForNewEater = (id) => {
     let pX = parseInt(id.split(',')[0])
     let pY = parseInt(id.split(',')[1])
 
-
+    //Eaters were being spawned inside of greens, double assignment not allowed. Let's add a check where if there are greens, we remove them.
     for (let xx = -1; xx < 2; xx++){
         for (let yy = -1; yy < 2; yy++){
-            // console.log(xx,yy)
-            // console.log([Math.abs(xx+pX), Math.abs(yy+pY)])
-            // console.log(id)
-            // if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)] !== undefined){
-                if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)] !== 2){
+
+                if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)][0] !== 2){
                     let cX = Math.abs(xx+pX)
                     let cY = Math.abs(yy+pY)
-    
-                    return [cX, cY]
+                    if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)][0] === 1) {
+                        console.log('green exists at eater child spawn, removing eater')
+                        removeGreen([cX,cY].join(','))
+                        return [cX, cY]
+                    } else {
+                        return [cX, cY]
+                    }
                 }
-            // }
         }
     }
 }
+
+
 
 const scanAreaForGreens = (id, range) => {
     //Alternate approach: Filter through the list of greens and determine which are closest. OR Use .find to determine the first green that satisfies the callback
@@ -220,7 +227,6 @@ const scanAreaForGreens = (id, range) => {
 }
 
 //Green Functions
-
 const drawGreenSprite = (x,y) => {
     let green = new PIXI.Sprite(PIXI.loader.resources["./assets/images/green.png"].texture);    
 
@@ -237,6 +243,13 @@ const drawGreenSprite = (x,y) => {
     app.stage.addChild(green);
 }
 
+checkGreens = () => {
+    let eaterIds = eaters.map(eater => eater.id)
+    let vGreens = greens.filter(green => eaterIds.includes(green.id))
+    vGreens.forEach(green => removeGreen(green.id))
+    vGreens.forEach(green => app.stage.removeChild(green))
+}
+
 
 const populateGreens = (n) => {
     for (let i = 0; i < n; i++){
@@ -244,7 +257,9 @@ const populateGreens = (n) => {
     }
 }
 
-const reproduceGreen = (x,y, id) => {
+const reproduceGreen = (id) => {
+    let x = parseInt(id.split(',')[0])
+    let y = parseInt(id.split(',')[1])
     let chance = Math.random()
     if (chance < greenGrowthRate) {
         //decide which square will be turned green
@@ -276,27 +291,21 @@ const reproduceGreen = (x,y, id) => {
     }
 }
 
-//TODO Find out why this function is nessesary in the first place... patch NOT solution
-const sweepOutGreens = () => {
-    let ids = eaters.map((eater) => { return eater.id })
-    let peskyGreens = greens.filter((green) => { return ids.includes(green.id) })
 
-    if (peskyGreens.length !== 0){
-        debugger;
-    }
+//
+const removeGreen = (greenId) => {
     
-    peskyGreens.forEach((green) => {
-
-        console.log(green.id)
-
-        let greensIndex = greens.findIndex((listedGreen) => green.id === listedGreen.id)
-
-        let X = parseInt(green.id.split(',')[0])
-        let Y = parseInt(green.id.split(',')[1])
-        
-        greens.splice(greensIndex, 1)
-        app.stage.removeChild(green)
+    let green = app.stage.children.find(function(ind){
+        return ind.id == greenId
     })
+    let greensIndex = greens.findIndex((green) => green.id === greenId)
+
+    let x = parseInt(greenId.split(',')[0])
+    let y = parseInt(greenId.split(',')[1])
+
+    greens.splice(greensIndex, 1)
+    app.stage.removeChild(green)
+    setGridArray(x,y,0,0)
 }
 
 
@@ -313,7 +322,14 @@ const populateEaters = (n) => {
     }
 }
 
-const drawEater = (x,y) => {
+const calculateEaterAverageGeneration = () => {
+    let total = eaters.reduce((eater) => {
+        return eater.generation
+    }, 0)
+    return total/eaters.length
+}
+
+const drawEater = (x,y, parentGen=0) => {
     // let eater = new PIXI.Sprite(eaterTexture);
 
     let eater = new PIXI.Sprite(PIXI.loader.resources["./assets/images/eater.png"].texture);    
@@ -324,6 +340,7 @@ const drawEater = (x,y) => {
     eater.x = (lineSpacing+margin) + ((lineSpacing)*(x-1));
     eater.y = (lineSpacing+margin) + ((lineSpacing)*(y-1)) + margin;
 
+    eater.generation = parentGen + 1
     eater.age = 0
     eater.nutrients = 0
 
@@ -342,6 +359,8 @@ const drawDeadEater = (x,y) => {
     
     deadEater.x = (lineSpacing+margin) + ((lineSpacing)*(x-1));
     deadEater.y = (lineSpacing+margin) + ((lineSpacing)*(y-1)) + margin;
+
+    deadEater.alpha = 0.5
 
     app.stage.addChild(deadEater)
 }
@@ -450,24 +469,26 @@ const moveEater = (eater) => {
     // console.log(eater.id)
     
     if (grid[x+xMod][y+yMod][0] === 1){
-        // console.log('moving into occupied green space')
+        console.log('moving into occupied green space')
 
         
 
         //if the space about to be occupied by an eater is currently occupied by a green,
         //remove the green from the canvas.
         let greenId = `${x+xMod},${y+yMod}`
-        let green = app.stage.children.find(function(ind){
-            return ind.id == greenId
-        })
-        let greensIndex = greens.findIndex((green) => green.id === greenId)
-        // console.log(greensIndex)
+        // let green = app.stage.children.find(function(ind){
+        //     return ind.id == greenId
+        // })
+        // let greensIndex = greens.findIndex((green) => green.id === greenId)
+        // // console.log(greensIndex)
 
-        // console.log(eater.id, ' eater')
-        // console.log(green.id, ' green')
+        // // console.log(eater.id, ' eater')
+        // // console.log(green.id, ' green')
 
-        greens.splice(greensIndex, 1)
-        app.stage.removeChild(green)
+        // greens.splice(greensIndex, 1)
+        // app.stage.removeChild(green)
+
+        removeGreen(greenId)
 
         //Add a point of nutrition for the eater that removed the green
         eater.nutrients = eater.nutrients+1
@@ -514,7 +535,7 @@ const reproduceEater = (eater) => {
      } else if (eater.gestation > 0) {
         // console.log(eater.gestation)
         eater.gestation = eater.gestation - 1
-        eater.tint = "0x5D3FD3"
+        eater.tint = "0x5D3FD3" 
     } else if (eater.gestation === 0) {
         //birth child and set gestation to undefined
         // console.log('child born')
@@ -522,9 +543,7 @@ const reproduceEater = (eater) => {
         eater.tint = '0xFFFFFF'
         let childLocation = scanAreaForNewEater(eater.id)
 
-        // console.log(childLocation)
-
-        drawEater(childLocation[0],childLocation[1])
+        drawEater(childLocation[0],childLocation[1], eater.generation)
 
         eater.gestation = undefined
     }
@@ -594,39 +613,34 @@ const updateStats = () => {
 
 const checkForExtinction = () => {
     if (greens.length === 0) {
-        // pauseSim()
-        if (messages.length === 0){
+        if (eaters.length === 0 && doomMessageShown === true) {
+            pauseSim()
+            resumeButton.disabled = true
+            app.stage.children.find(child => child.id === 'ge').text = 'Greens have gone extinct. As a result, all eaters have starved.'
+        } else if (doomMessageShown === false) {
             const doomMessage = new PIXI.Text('Greens have gone extinct. As a result, all eaters will starve.', messageStyle)
-            doomMessage.x = app.stage.width / 3 + 10
-            doomMessage.y = app.stage.height / 2 - 18  
-            messages.push(doomMessage)
+            doomMessage.x = width / 3 - ((width/3)*.20)
+            doomMessage.y = height / 2 - 18  
+            doomMessage.id = 'ge'
             app.stage.addChild(doomMessage)
+            doomMessageShown = true
         }
-        
-
-        if (eaters.length === 0) {
+    }
+    if (eaters.length === 0) { 
+        if (greens.length === (numCols*numRows) && doomMessageShown === true) {
             pauseSim()
             resumeButton.disabled = true
-
-
-            messages[0].text = 'Greens have gone extinct. As a result, all eaters have starved.'
-        }
-        
-    } else if (eaters.length === 0) {
-        if (messages.length === 0) {
+    
+            app.stage.children.find(child => child.id === 'ee').text = 'Eaters have gone extinct. As a result, Greens have dominated the tidepool unchecked.'
+        } else {
             const doomMessage = new PIXI.Text('Eaters have gone extinct. As a result, Greens will dominate the tidepool unchecked.', messageStyle)
-            // doomMessage.position.set(width/4, height/2)
-            doomMessage.x = app.stage.width / 3 + 10
-            doomMessage.y = app.stage.height / 2 - 18  
-            messages.push(doomMessage)
+            doomMessage.x = width / 3 - ((width/3)*.30)
+            doomMessage.y = height / 2 - 18
+            doomMessage.id = 'ee'
             app.stage.addChild(doomMessage)
+            doomMessageShown = true
         }
-        if (greens.length === (numCols*numRows)) {
-            pauseSim()
-            resumeButton.disabled = true
-
-            messages[0].text = 'Eaters have gone extinct. As a result, Greens have dominated the tidepool unchecked.'
-        }
+        app.stage.children.find(child => child.id === 'ee').renderer()
     }
 }
 
@@ -697,14 +711,16 @@ const gameLoop = () => {
         //Iterate over each green object
         
         //ADVANTAGE - we are no longer iterating over the entire grid each step, now we are only iterating over the arrays containing the elements
-        let gridSnapShot = [...grid]
+        // let gridSnapShot = [...grid]
         greens.forEach(function(green){
             
             let x = green.id.split(',')[0]
             let y = green.id.split(',')[1]
             
-            try { reproduceGreen(parseInt(x), parseInt(y), `${x},${y}`) }
-            catch (e) {}//console.log(e)}
+            try { reproduceGreen(green.id) }
+            catch (e) {} //console.log(e)}
+            
+            checkGreens()
             
         })
         

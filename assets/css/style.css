@@ -86,6 +86,8 @@ html, body {
     height: 80vh;
 
     /* margin-top: 2%; */
+    margin-left: 2%;
+    /* margin-right: 10%;  */
     top: 2%;
     right: 0px;
     bottom: 0px;
@@ -93,6 +95,10 @@ html, body {
 
     
 }
+
+/* #canvas canvas {
+    align-content: center;
+} */
 
 #stats {
     color: white;
