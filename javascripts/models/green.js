@@ -39,7 +39,7 @@ class Green {
 
     static processGreens = () => {
         Green.all.forEach(green => {
-            try { green.reproduceGreen }
+            try { green.reproduceGreen() }
             catch (e) {}
             checkGreens()
         })
