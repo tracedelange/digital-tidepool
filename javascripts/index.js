@@ -1,4 +1,4 @@
-const gridScale = 10
+const gridScale = 30
 let width = (document.body.clientWidth)*.96 
 const height = ((document.body.clientHeight)*.95) - (((document.body.clientHeight)*.95) % gridScale)
 // const width = (window.screen.width)*.95
@@ -22,13 +22,13 @@ const background = "E2FAB5"
 //Creature constants
 const greenGrowthRate = .08
 
-const eaterPerception = 3 //measure of how many blocks the eaters can scan in search of a green
+const eaterPerception = 4 //measure of how many blocks the eaters can scan in search of a green
 const eaterScale = 1
 const eaterLifespan  = 300 //measure of how many frames an eater survives before death
 const eaterDeathChance = .5
-const eaterReproductionRate = 1
+const eaterReproductionRate = .2
 const eaterGestationPeriod = 50
-const eaterNutrientRequirement = 35
+const eaterNutrientRequirement = 50
 
 
 // DOM item declarations
