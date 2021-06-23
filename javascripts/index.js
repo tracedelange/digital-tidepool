@@ -1,4 +1,4 @@
-const gridScale = 20
+const gridScale = 10
 let width = (document.body.clientWidth)*.96 
 const height = ((document.body.clientHeight)*.95) - (((document.body.clientHeight)*.95) % gridScale)
 // const width = (window.screen.width)*.95
@@ -310,6 +310,7 @@ const removeGreen = (greenId) => {
 
 
 //Eater Functions
+
 const populateEaters = (n) => {
     for (let i = 0; i < n; i++){
         let x = Math.floor(Math.random()*numCols)
@@ -742,9 +743,9 @@ const mainConfig = () => {
         
         event.preventDefault()
         
-        populateGreens(initalGreenPopInput.value)
+        // populateGreens(initalGreenPopInput.value)
 
-        populateEaters(initalEaterPopInput.value)
+        // populateEaters(initalEaterPopInput.value)
 
 
 
