@@ -48,8 +48,7 @@ class Green {
     reproduceGreen = () => {
         let x = parseInt(this.id.split(',')[0])
         let y = parseInt(this.id.split(',')[1])
-        let chance = Math.random()
-        if (chance < greenGrowthRate) {
+        if (Math.random() < greenGrowthRate) {
             //decide which square will be turned green
             let zone = Math.random()
 
@@ -68,7 +67,7 @@ class Green {
 }
 
 checkGreens = () => {
-    let eaterIds = eaters.map(eater => eater.id)
+    let eaterIds = Eater.all.map(eater => eater.id)
     let vGreens = Green.all.filter(green => eaterIds.includes(green.id))
     vGreens.forEach(green => Green.removeGreen(green.id))
 }

@@ -1,103 +1,3 @@
-const gridScale = 30
-let width = (document.body.clientWidth)*.96 
-const height = ((document.body.clientHeight)*.95) - (((document.body.clientHeight)*.95) % gridScale)
-// const width = (window.screen.width)*.95
-// const height = (window.screen.height)*.8
-const margin = 1
-const html = document.getElementsByTagName('html')[0]
-const lineSpacing = Math.floor(height/gridScale)
-
-const numRows = gridScale
-const numCols = Math.floor((width/lineSpacing))
-
-width = width - (width % numCols)
-
-const frameRate = 1000/15
-
-//1980x1080 most common screen size apparently 
-
-const green = "93E9BE"
-const background = "E2FAB5"
-
-//Creature constants
-const greenGrowthRate = .08
-
-const eaterPerception = 4 //measure of how many blocks the eaters can scan in search of a green
-const eaterScale = 1
-const eaterLifespan  = 300 //measure of how many frames an eater survives before death
-const eaterDeathChance = .5
-const eaterReproductionRate = .2
-const eaterGestationPeriod = 50
-const eaterNutrientRequirement = 50
-
-
-// DOM item declarations
-const canvasDiv = document.getElementById('canvas')
-const initalGreenPopInput = document.getElementById('green-starting-pop')
-const initalEaterPopInput = document.getElementById('eater-starting-pop')
-
-const gridConfig = document.getElementById('gridConfig')
-const configSubmitButton = document.getElementById('config-submission-button')
-const pauseButton = document.getElementById('pause')
-const resumeButton = document.getElementById('resume')
-const resetButton = document.getElementById('reset')
-const aboutButton = document.getElementById('about')
-const guide = document.getElementById('guide')
-
-const greenPop = document.getElementById('green-pop')
-const eaterPop = document.getElementById('eater-pop')
-const greenEaterRatio = document.getElementById('green-eater-ratio')
-const averageGen = document.getElementById('average-eater-generation')
-
-
-
-
-//These can be replaced by class objects 
-const eaters = [];
-const greens = [];
-const messages = [];
-
-//Simulation running bool
-let running = false
-
-doomMessageShown = false
-
-//Guide page visible bool
-let guideVisible = false
-
-//Pixi Specific declarations
-let app = new PIXI.Application({
-    // width: width,
-    // height: height,
-    width: width, 
-	height: height,
-	autoResize: true,
-    backgroundColor: 0xE2FAB5,
-    // resizeTo: window
-
-    resolution: window.devicePixelRatio || 1
-});
-
-let messageStyle = new PIXI.TextStyle({
-    fontFamily: "Times New Roman",
-    fontSize: Math.round(width/50),
-    fill: "white",
-    stroke: 'black',
-    strokeThickness: 2,
-    dropShadow: true,
-    // dropShadowColor: "#000000",
-    dropShadowBlur: 4,
-    // dropShadowAngle: Math.PI / 6,
-    // dropShadowDistance: 6,
-  });
-
-PIXI.Loader.shared
-.add("./assets/images/eater.png")
-.add("./assets/images/green.png")
-.add("./assets/images/dead_eater.png")
-.load(function(){
-      console.log('resources loaded')
-  })
 
 //General drawing functions
 const drawLine = function(startX, startY, endX, endY) {
@@ -147,6 +47,8 @@ const setGridArray = (x,y,index,value) => {
 const startSim = () => {
     running = true
     
+    getParameters()
+
     //adjust buttons
     initalGreenPopInput.disabled = true
     configSubmitButton.disabled = true
@@ -170,6 +72,18 @@ const updateStats = () => {
     greenEaterRatio.innerText = `Green to Eater Ratio: ${Math.round(Green.all.length / Eater.all.length)}:1`
     
     
+
+}
+
+const getParameters = () => {
+
+    greenGrowthRate = parseFloat(getGreenGrowthRate())
+    eaterPerception = parseInt(getEaterPerception())
+    eaterLifespan = parseInt(getEaterLifespan())
+    eaterDeathChance = parseFloat(getEaterDeathChance())
+    eaterReproductionRate = parseFloat(getEaterReproductionRate())
+    eaterGestationPeriod = parseInt(getEaterGestationPeriod())
+    eaterNutrientRequirement = parseInt(getEaterNutrientRequirement())
 
 }
 
@@ -206,6 +120,8 @@ const checkForExtinction = () => {
     }
 }
 
+
+
 const pauseSim = () => {
     //Update running variable to false to stop the game loop
     running = false
@@ -237,6 +153,24 @@ const displayAbout = () => {
     }
 }
 
+const displayParams = () => {
+    if (paramsVisible){
+        parameterDiv.style.display = 'none';
+        paramsVisible = false
+    } else {
+        parameterDiv.style.display = 'inline';
+        paramsVisible = true
+    }
+}
+
+const submitOverrideParameters = () => { //Button currently disabled, might not even be used
+    console.log('Override submit clicked and default prevented')
+}
+
+const submitParamsToJson = () => {
+    
+}
+
 const addButtonListeners = () => {
     pauseButton.addEventListener('click', function(){
         pauseSim()
@@ -245,14 +179,28 @@ const addButtonListeners = () => {
         resumeSim()
     })
     resetButton.addEventListener('click', function (){
+        //On reset clicked, package all parameter data and submit it to a json server
+        //Once completed, reload the page. 
+        submitParamsToJson()
         resetSim()
     })
     aboutButton.addEventListener('click', function(){
         displayAbout()
     } )
+    parameterButton.addEventListener('click', function(){
+        displayParams()
+    })
+
+    //Technically not a button but its my code my rules
+    parameterOverrideForm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        submitOverrideParameters()
+    })
+
 }
 
 const gameLoop = () => {
+
     
     if (running === true){
         
@@ -282,7 +230,8 @@ const mainConfig = () => {
 
         Eater.populateEaters(initalEaterPopInput.value)
         
-
+        parameterDiv.style.display = 'none'
+        parameterButton.disabled = true
 
 
         startSim()
@@ -299,12 +248,8 @@ const mainConfig = () => {
 document.addEventListener('DOMContentLoaded', function(event){
     
     grid = generateGrid(gridScale)
-    
-    // drawGrid()
-    // drawBackgroundSprite()
-    
+
     mainConfig()
     
-
 })
 

@@ -115,7 +115,7 @@ class Eater {
         this.sprite.y = (lineSpacing+margin) + ((lineSpacing)*((y+yMod)-1)) + margin;
         
         if (grid[x+xMod][y+yMod][0] === 1){
-            console.log('moving into occupied green space')
+            // console.log('moving into occupied green space')
             
             //if the space about to be occupied by an eater is currently occupied by a green,
             //remove the green from the canvas.

@@ -33,7 +33,7 @@
                 <button id='pause' disabled='true'>Pause</button>
                 <button id='resume' disabled='true'>Resume</button>
                 <button id='reset' disabled='true'>Reset</button> 
-                <button id='param_override' disabled='true'>Parameters</button> 
+                <button id='parameter-button'>Parameters</button> 
                 <button id='about'>About / Key</button> 
                 
             </div>
@@ -46,8 +46,61 @@
                 </ul>   
             </div>
         </div>
+        <div id="parameters">
+            <div class='content'>
+                <h2>Custom Parameters:</h2>
+                <form id='parameter-override'>
+                    <div class='flexItem' id="green-params">
+                        <label for="green-params">Green Parameters:</label>
+                        <ul>
+                            <li>
+                                <label for="green-growth-rate: ">Growth Rate</label>
+                                <input id="green-growth-rate" value="0.08" min="0" max="1" step="0.01" type="number">
+                            </li>
+                        </ul>
+                    </div>
+                    <div class='flexItem' id="eater-params">
+                        <label for="eater-params">Eater Parameters:</label>
+                        <ul>
+                            <!-- <li>
+                                <label for="eater-growth-rate">Growth Rate: </label>
+                                <input id="eater-growth-rate" value='0.08' type="number">
+                            </li> -->
+                            <li>
+                                <label for="eater-perception">Perception: </label>
+                                <input id="eater-perception" value="4" min='1' max="20" step="1" type="number">
+                            </li>
+                            <li>
+                                <label for="eater-lifespan">Lifespan: </label>
+                                <input id="eater-lifespan" value="300" min="10" max="1000" step="1" type="number">
+                            </li>
+                            <li>
+                                <label for="eater-death-rate">Death Rate: </label>
+                                <input id="eater-death-rate" value='0.5' min="0" max="1" step="0.01" type="number">
+                            </li>
+                            <li>
+                                <label for="eater-reproduction-rate">Reproduction Rate: </label>
+                                <input id="eater-reproduction-rate" value='0.2'step="0.01" min="0" max="1" type="number">
+                            </li>
+                            <li>
+                                <label for="eater-gestation-period">Gestation Period: </label>
+                                <input id="eater-gestation-period" value="50" min='1' max="1000" type="number">
+                            </li>
+                            <li>
+                                <label for="eater-nutrient-requirement">Reproduction Cost: </label>
+                                <input id="eater-nutrient-requirement" value="50" min="1" max="1000" type="number">
+                            </li>
+                        </ul>
+                    </div>
+                    <div class='flexItem'>
+                        <!-- <button id="submit-params" type="submit">Submit override parameters</button> -->
+                        <p>To see your parameter changes take effect, click "Populate Grid and Start Sim"</p>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div id="guide">
-            <div id='content'>
+            <div class='content'>
                 <h2>Welcome to the Digital Tidepool</h2>
                 <p>This is a simulation based on the 
                     <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Game of Life</a>   
@@ -63,10 +116,11 @@
 
         </div>
         
+        <link rel="stylesheet" href="assets/css/style.css">
+        <script src="javascripts/pixi.min.js"></script>
+        <script src="javascripts/globals.js"></script>
+        <script src="javascripts/models/green.js"></script>
+        <script src="javascripts/models/eater.js"></script>
+        <script src="javascripts/index.js"></script>
     </body>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <script src="javascripts/pixi.min.js"></script>
-    <script src="javascripts/models/green.js"></script>
-    <script src="javascripts/models/eater.js"></script>
-    <script src="javascripts/index.js"></script>
 </html>
