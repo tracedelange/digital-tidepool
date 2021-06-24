@@ -39,6 +39,7 @@ class Eater {
             eater.moveEater()
             eater.manageAge()
             eater.reproduceEater()
+            calculateAverageGen()
         })
     }
 
@@ -266,3 +267,14 @@ const scanAreaForGreens = (id, range) => {
         return targets //[Math.floor(Math.random()*targets.length)]
     }
 }
+
+const calculateAverageGen = () => {
+    let sum = 0
+    Eater.all.forEach(eater => {
+    sum = eater.generation + sum })
+
+    let avgGen = sum/Eater.all.length
+
+    averageGen.innerText = `Average Eater Generation: ${(avgGen).toFixed(2)}`
+}
+

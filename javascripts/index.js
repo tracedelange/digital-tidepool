@@ -1,24 +1,26 @@
 
 //General drawing functions
-const drawLine = function(startX, startY, endX, endY) {
-    let line = new PIXI.Graphics();
-    line.lineStyle(1, 0x663333, 1);
-    line.moveTo(startX, startY);
-    line.lineTo(endX, endY);
-    line.x = 0;
-    line.y = 0;
-    line.alpha = 0.5;
-    app.stage.addChild(line);
-}
+// const drawLine = function(startX, startY, endX, endY) {
+//     let line = new PIXI.Graphics();
+//     line.lineStyle(1, 0x663333, 1);
+//     line.moveTo(startX, startY);
+//     line.lineTo(endX, endY);
+//     line.x = 0;
+//     line.y = 0;
+//     line.alpha = 0.5;
+//     app.stage.addChild(line);
+// }
 
-const drawGrid = function(){
-    for (let i = 0; i < numRows + 1; i++){
-        drawLine(0,lineSpacing + (lineSpacing*i)+1,width,lineSpacing + (lineSpacing*i)+1)
-    }
-    for (let i = 0; i < numCols; i++){
-        drawLine((lineSpacing) + ((lineSpacing)*i)+1,0,lineSpacing + ((lineSpacing)*i)+1,height)
-    }
-}
+// const drawGrid = function(){
+//     for (let i = 0; i < numRows + 1; i++){
+//         drawLine(0,lineSpacing + (lineSpacing*i)+1,width,lineSpacing + (lineSpacing*i)+1)
+//     }
+//     for (let i = 0; i < numCols; i++){
+//         drawLine((lineSpacing) + ((lineSpacing)*i)+1,0,lineSpacing + ((lineSpacing)*i)+1,height)
+//     }
+// }
+
+
 
 //Grid manipulation
 const generateGrid = function(gridScale){
@@ -41,6 +43,46 @@ const setGridArray = (x,y,index,value) => {
     grid[x][y][index] = value
 }
 
+const populateParametersFromJson = (source) => {
+    fetch(`http://localhost:3000/${source}`)
+    .then(response => response.json())
+    .then(data => {
+        initalGreenPopInput.value = data['initalGreenPopulation'],
+        initalEaterPopInput.value = data['initalEaterPopulation'],
+        document.getElementById('green-growth-rate').value = data['greenGrowthRate']
+        document.getElementById('eater-perception').value = data['eaterPerception']
+        document.getElementById('eater-lifespan').value = data['eaterLifespan']
+        document.getElementById('eater-death-rate').value = data['eaterDeathChance']
+        document.getElementById('eater-reproduction-rate').value = data['eaterReproductionRate']
+        document.getElementById('eater-gestation-period').value = data['eaterGestationPeriod']
+        document.getElementById('eater-nutrient-requirement').value = data['eaterNutrientRequirement']
+    })
+}
+
+const submitParamsToJson = () => {
+    const paramData = {
+        "initalGreenPopulation": initalGreenPopInput.value,
+        "initalEaterPopulation": initalEaterPopInput.value,
+        'greenGrowthRate' : document.getElementById('green-growth-rate').value,
+        'eaterPerception' : document.getElementById('eater-perception').value,
+        'eaterLifespan' : document.getElementById('eater-lifespan').value,
+        'eaterDeathChance' : document.getElementById('eater-death-rate').value,
+        'eaterReproductionRate' : document.getElementById('eater-reproduction-rate').value,
+        'eaterGestationPeriod' : document.getElementById('eater-gestation-period').value,
+        'eaterNutrientRequirement' : document.getElementById('eater-nutrient-requirement').value
+    }
+
+    const configurationObject = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(paramData)
+      };
+      
+    fetch("http://localhost:3000/currentParameters", configurationObject); 
+}
 
 
 //Sim loop functions
@@ -62,17 +104,11 @@ const startSim = () => {
 
 const updateStats = () => {
 
-// const greenPop = document.getElementById('green-pop')
-// const eaterPop = document.getElementById('eater-pop')
-// const greenEaterRatio = document.getElementById('green-eater-ratio')
-// const averageGen = document.getElementById('average-eater-generation')
-
     greenPop.innerText = `Green Population: ${Green.all.length}`
     eaterPop.innerText = `Eater Population: ${Eater.all.length}`
     greenEaterRatio.innerText = `Green to Eater Ratio: ${Math.round(Green.all.length / Eater.all.length)}:1`
     
-    
-
+    timestepNode.innerText = `Timestep: ${parseInt(timestepNode.innerText.split(' ')[1]) + 1}`
 }
 
 const getParameters = () => {
@@ -93,12 +129,14 @@ const checkForExtinction = () => {
             pauseSim()
             resumeButton.disabled = true
             app.stage.children.find(child => child.id === 'ge').text = 'Greens have gone extinct. As a result, all eaters have starved.'
+            return
         } else if (doomMessageShown === false) {
             const doomMessage = new PIXI.Text('Greens have gone extinct. As a result, all eaters will starve.', messageStyle)
             doomMessage.x = width / 3 - ((width/3)*.20)
             doomMessage.y = height / 2 - 18  
             doomMessage.id = 'ge'
             app.stage.addChild(doomMessage)
+            // console.log('This should only appear once')
             doomMessageShown = true
         }
     }
@@ -108,7 +146,8 @@ const checkForExtinction = () => {
             resumeButton.disabled = true
     
             app.stage.children.find(child => child.id === 'ee').text = 'Eaters have gone extinct. As a result, Greens have dominated the tidepool unchecked.'
-        } else {
+            return
+        } else if (doomMessageShown === false){
             const doomMessage = new PIXI.Text('Eaters have gone extinct. As a result, Greens will dominate the tidepool unchecked.', messageStyle)
             doomMessage.x = width / 3 - ((width/3)*.30)
             doomMessage.y = height / 2 - 18
@@ -116,7 +155,13 @@ const checkForExtinction = () => {
             app.stage.addChild(doomMessage)
             doomMessageShown = true
         }
-        app.stage.children.find(child => child.id === 'ee').renderer()
+        let message = app.stage.children.find(child => child.id === 'ee')
+        app.stage.removeChild(message)
+        const doomMessage = new PIXI.Text('Eaters have gone extinct. As a result, Greens will dominate the tidepool unchecked.', messageStyle)
+        doomMessage.x = width / 3 - ((width/3)*.30)
+        doomMessage.y = height / 2 - 18
+        doomMessage.id = 'ee'
+        app.stage.addChild(doomMessage)
     }
 }
 
@@ -163,13 +208,12 @@ const displayParams = () => {
     }
 }
 
-const submitOverrideParameters = () => { //Button currently disabled, might not even be used
-    console.log('Override submit clicked and default prevented')
+const resetDefaultParameters = () => { //Button currently disabled, might not even be used
+    populateParametersFromJson('DefaultParameters')
 }
 
-const submitParamsToJson = () => {
-    
-}
+
+
 
 const addButtonListeners = () => {
     pauseButton.addEventListener('click', function(){
@@ -191,10 +235,9 @@ const addButtonListeners = () => {
         displayParams()
     })
 
-    //Technically not a button but its my code my rules
-    parameterOverrideForm.addEventListener('submit', (event) => {
+    defaultParameterButton.addEventListener('click', (event) => {
         event.preventDefault()
-        submitOverrideParameters()
+        resetDefaultParameters()
     })
 
 }
@@ -219,6 +262,7 @@ const gameLoop = () => {
 //Main config 
 const mainConfig = () => {
     
+    populateParametersFromJson('currentParameters')
 
     canvasDiv.appendChild(app.view);
 
@@ -229,9 +273,10 @@ const mainConfig = () => {
         Green.populateGreens(initalGreenPopInput.value)
 
         Eater.populateEaters(initalEaterPopInput.value)
+
         
         parameterDiv.style.display = 'none'
-        parameterButton.disabled = true
+        // parameterButton.disabled = true
 
 
         startSim()

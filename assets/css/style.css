@@ -66,7 +66,7 @@ html input {
 }
 #parameter-override li input{
     list-style-type: none;
-    width: 15%;
+    width: 4vw;
 }
 
 #submit-params {
@@ -113,6 +113,9 @@ input[type=number]{
 
 .content p {
     opacity: 70%;
+}
+.content img {
+    margin-left: 8vw;
 }
 
 /* 
@@ -227,3 +230,29 @@ button[disabled]{
   color:#dadada;
   opacity: 50%;
 }
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    /* border-bottom: 1px dotted black; */
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 10vw;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    right: 105%;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }

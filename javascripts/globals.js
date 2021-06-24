@@ -25,12 +25,15 @@ const resumeButton = document.getElementById('resume')
 const resetButton = document.getElementById('reset')
 const aboutButton = document.getElementById('about')
 const guide = document.getElementById('guide')
-const parameterButton = document.getElementById('parameter-button')
+const defaultParameterButton = document.getElementById('set-params-default')
 const parameterDiv = document.getElementById('parameters')
-const parameterOverrideForm = document.getElementById('parameter-override')
+const parameterButton = document.getElementById('parameter-button')
+// const parameterOverrideForm = document.getElementById('parameter-override')
 
-const greenPop = document.getElementById('green-pop')
+//Stat DOM Nodes
+const timestepNode = document.getElementById('timestep')
 const eaterPop = document.getElementById('eater-pop')
+const greenPop = document.getElementById('green-pop')
 const greenEaterRatio = document.getElementById('green-eater-ratio')
 const averageGen = document.getElementById('average-eater-generation')
 
