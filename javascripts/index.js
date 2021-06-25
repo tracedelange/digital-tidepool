@@ -43,46 +43,46 @@ const setGridArray = (x,y,index,value) => {
     grid[x][y][index] = value
 }
 
-const populateParametersFromJson = (source) => {
-    fetch(`http://localhost:3000/${source}`)
-    .then(response => response.json())
-    .then(data => {
-        initalGreenPopInput.value = data['initalGreenPopulation'],
-        initalEaterPopInput.value = data['initalEaterPopulation'],
-        document.getElementById('green-growth-rate').value = data['greenGrowthRate']
-        document.getElementById('eater-perception').value = data['eaterPerception']
-        document.getElementById('eater-lifespan').value = data['eaterLifespan']
-        document.getElementById('eater-death-rate').value = data['eaterDeathChance']
-        document.getElementById('eater-reproduction-rate').value = data['eaterReproductionRate']
-        document.getElementById('eater-gestation-period').value = data['eaterGestationPeriod']
-        document.getElementById('eater-nutrient-requirement').value = data['eaterNutrientRequirement']
-    })
-}
+// const populateParametersFromJson = (source) => {
+//     fetch(`http://localhost:3000/${source}`)
+//     .then(response => response.json())
+//     .then(data => {
+//         initalGreenPopInput.value = data['initalGreenPopulation'],
+//         initalEaterPopInput.value = data['initalEaterPopulation'],
+//         document.getElementById('green-growth-rate').value = data['greenGrowthRate']
+//         document.getElementById('eater-perception').value = data['eaterPerception']
+//         document.getElementById('eater-lifespan').value = data['eaterLifespan']
+//         document.getElementById('eater-death-rate').value = data['eaterDeathChance']
+//         document.getElementById('eater-reproduction-rate').value = data['eaterReproductionRate']
+//         document.getElementById('eater-gestation-period').value = data['eaterGestationPeriod']
+//         document.getElementById('eater-nutrient-requirement').value = data['eaterNutrientRequirement']
+//     })
+// }
 
-const submitParamsToJson = () => {
-    const paramData = {
-        "initalGreenPopulation": initalGreenPopInput.value,
-        "initalEaterPopulation": initalEaterPopInput.value,
-        'greenGrowthRate' : document.getElementById('green-growth-rate').value,
-        'eaterPerception' : document.getElementById('eater-perception').value,
-        'eaterLifespan' : document.getElementById('eater-lifespan').value,
-        'eaterDeathChance' : document.getElementById('eater-death-rate').value,
-        'eaterReproductionRate' : document.getElementById('eater-reproduction-rate').value,
-        'eaterGestationPeriod' : document.getElementById('eater-gestation-period').value,
-        'eaterNutrientRequirement' : document.getElementById('eater-nutrient-requirement').value
-    }
+// const submitParamsToJson = () => {
+//     const paramData = {
+//         "initalGreenPopulation": initalGreenPopInput.value,
+//         "initalEaterPopulation": initalEaterPopInput.value,
+//         'greenGrowthRate' : document.getElementById('green-growth-rate').value,
+//         'eaterPerception' : document.getElementById('eater-perception').value,
+//         'eaterLifespan' : document.getElementById('eater-lifespan').value,
+//         'eaterDeathChance' : document.getElementById('eater-death-rate').value,
+//         'eaterReproductionRate' : document.getElementById('eater-reproduction-rate').value,
+//         'eaterGestationPeriod' : document.getElementById('eater-gestation-period').value,
+//         'eaterNutrientRequirement' : document.getElementById('eater-nutrient-requirement').value
+//     }
 
-    const configurationObject = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(paramData)
-      };
+//     const configurationObject = {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Accept": "application/json"
+//         },
+//         body: JSON.stringify(paramData)
+//       };
       
-    fetch("http://localhost:3000/currentParameters", configurationObject); 
-}
+//     fetch("http://localhost:3000/currentParameters", configurationObject); 
+// }
 
 
 //Sim loop functions
@@ -208,7 +208,7 @@ const displayParams = () => {
     }
 }
 
-const resetDefaultParameters = () => { //Button currently disabled, might not even be used
+const resetDefaultParameters = () => { 
     populateParametersFromJson('DefaultParameters')
 }
 
@@ -225,7 +225,7 @@ const addButtonListeners = () => {
     resetButton.addEventListener('click', function (){
         //On reset clicked, package all parameter data and submit it to a json server
         //Once completed, reload the page. 
-        submitParamsToJson()
+        bakeParameters()
         resetSim()
     })
     aboutButton.addEventListener('click', function(){
@@ -262,7 +262,7 @@ const gameLoop = () => {
 //Main config 
 const mainConfig = () => {
     
-    populateParametersFromJson('currentParameters')
+    // populateParametersFromJson('currentParameters')
 
     canvasDiv.appendChild(app.view);
 
@@ -282,6 +282,8 @@ const mainConfig = () => {
         startSim()
         
     })
+
+    populateParametersFromCookies()
 
     addButtonListeners()
 
