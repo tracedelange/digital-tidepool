@@ -20,10 +20,13 @@
         <div class='box'>
             <form action="#" id="gridConfig">
                 <label for="green-starting-pop">Inital Population Size of Greens: </label>
-                <input class='input-box' type="number" id="green-starting-pop" placeholder='' value="50">
+                <input class='input-box' type="number" id="green-starting-pop" placeholder='' value="100">
                 <br>
                 <label for="eater-starting-pop">Inital Population Size of Eaters: </label>
-                <input class='input-box' type="number" id="eater-starting-pop" placeholder='' value="2">
+                <input class='input-box' type="number" id="eater-starting-pop" placeholder='' value="10">
+                <br>
+                <label for="hunter-starting-pop">Inital Population Size of Hunters: </label>
+                <input class='input-box' type="number" id="hunter-starting-pop" placeholder='' value="1">
                 <br>
                 <button type="submit" id='config-submission-button'>Populate Grid and Start Sim</button>
             </form>
@@ -40,8 +43,11 @@
                     <li id='timestep'>Timestep: 0</li>
                     <li id='green-pop'>Green Population: 0</li>
                     <li id='eater-pop'>Eater Population: 0</li>
-                    <li id='green-eater-ratio'>Green:Eater Ratio: 0</li>
+                    <li id='hunter-pop'>Hunter Population: 0</li>
+                    <li id='green-eater-ratio'>Green to Eater Ratio: 0</li>
+                    <li id='hunter-eater-ratio'>Hunter to Green Rato: 0</li>
                     <li id='average-eater-generation'>Average Eater Generation: 0</li>
+                    <li id='average-hunter-gen'>Average Hunter Generation: 0</li>
                 </ul>   
             </div>
         </div>
@@ -57,7 +63,7 @@
                                     <label for="green-growth-rate: ">Growth Rate</label>
                                     <span class="tooltiptext">The rate at which each green reproduces. A value of 1 results in each green reproducing each timestep, a value of zero results in zero reproduction.</span>
                                 </div>
-                                <input id="green-growth-rate" value="0.04" min="0" max="1" step="0.01" type="number">
+                                <input id="green-growth-rate" value="0.1" min="0" max="1" step="0.01" type="number">
                             </li>
                         </ul>
                     </div>
@@ -67,37 +73,37 @@
                             <li>
                                 <div class="tooltip">
                                     <label class="tooltip" for="eater-perception">Perception: </label>
-                                    <span class="tooltiptext">The number of spaces surrounding an eater that can be scanned for greens</span>
+                                    <span class="tooltiptext">The number of spaces surrounding a eater that can be scanned for greens</span>
                                 </div>
-                                <input id="eater-perception" value="4" min='1' max="20" step="1" type="number">
+                                <input id="eater-perception" value="5" min='1' max="20" step="1" type="number">
                             </li>
                             <li>
                                 <div class="tooltip">
                                     <label class="tooltip" for="eater-lifespan">Lifespan: </label>
-                                    <span class="tooltiptext">The number of timesteps an eater will survive before it becomes susceptible to death</span>
+                                    <span class="tooltiptext">The number of timesteps a eater will survive before it becomes susceptible to death</span>
                                 </div>
-                                <input id="eater-lifespan" value="250" min="10" max="1000" step="1" type="number">
+                                <input id="eater-lifespan" value="200" min="10" max="1000" step="1" type="number">
                             </li>
                             <li>
                                 <div class="tooltip">
                                     <label class="tooltip" for="eater-death-rate">Death Rate: </label>
-                                    <span class="tooltiptext">The rate at which an eater past its lifespan will die. A value of 1 means instant death once lifespan is met. A value of zero means the lifespan will be ignored and the eater will survive indefinitely.</span>
+                                    <span class="tooltiptext">The rate at which a eater past its lifespan will die. A value of 1 means instant death once lifespan is met. A value of zero means the lifespan will be ignored and the eater will survive indefinitely.</span>
                                 </div>
                                 <input id="eater-death-rate" value='0.01' min="0" max="1" step="0.01" type="number">
                             </li>
                             <li>
                                 <div class="tooltip">
                                     <label class="tooltip" for="eater-reproduction-rate">Reproduction Rate: </label>
-                                    <span class="tooltiptext">The rate at which an eater capable of reproducing will undergo division</span>
+                                    <span class="tooltiptext">The rate at which a eater capable of reproducing will undergo division</span>
                                 </div>
                                 <input id="eater-reproduction-rate" value='0.1'step="0.01" min="0" max="1" type="number">
                             </li>
                             <li>
                                 <div class="tooltip">
                                     <label class="tooltip" for="eater-gestation-period">Gestation Period: </label>
-                                    <span class="tooltiptext">The number of timesteps an eater must remain stationary before divison is complete</span>
+                                    <span class="tooltiptext">The number of timesteps a eater must remain stationary before divison is complete</span>
                                 </div>
-                                <input id="eater-gestation-period" value="50" min='1' max="1000" type="number">
+                                <input id="eater-gestation-period" value="35" min='1' max="1000" type="number">
                             </li>
                             <li>
                                 <div class="tooltip">
@@ -105,6 +111,53 @@
                                     <span class="tooltiptext">The number of greens each eater must consume to reproduce</span>
                                 </div>
                                 <input id="eater-nutrient-requirement" value="50" min="1" max="1000" type="number">
+                            </li>
+                        </ul>
+                    </div>
+                    <div class='flexItem' id="hunter-params">
+                        <label for="hunter-params">Hunter Parameters:</label>
+                        <ul>
+                            <li>
+                                <div class="tooltip">
+                                    <label class="tooltip" for="hunter-perception">Perception: </label>
+                                    <span class="tooltiptext">The number of spaces surrounding a hunter that can be scanned for eaters</span>
+                                </div>
+                                <input id="hunter-perception" value="8" min='1' max="20" step="1" type="number">
+                            </li>
+                            <li>
+                                <div class="tooltip">
+                                    <label class="tooltip" for="hunter-lifespan">Lifespan: </label>
+                                    <span class="tooltiptext">The number of timesteps a hunter will survive before it becomes susceptible to death</span>
+                                </div>
+                                <input id="hunter-lifespan" value="500" min="10" max="1000" step="1" type="number">
+                            </li>
+                            <li>
+                                <div class="tooltip">
+                                    <label class="tooltip" for="hunter-death-rate">Death Rate: </label>
+                                    <span class="tooltiptext">The rate at which an hunter past its lifespan will die. A value of 1 means instant death once lifespan is met. A value of zero means the lifespan will be ignored and the hunter will survive indefinitely.</span>
+                                </div>
+                                <input id="hunter-death-rate" value='0.01' min="0" max="1" step="0.01" type="number">
+                            </li>
+                            <li>
+                                <div class="tooltip">
+                                    <label class="tooltip" for="hunter-reproduction-rate">Reproduction Rate: </label>
+                                    <span class="tooltiptext">The rate at which a hunter capable of reproducing will undergo division</span>
+                                </div>
+                                <input id="hunter-reproduction-rate" value='1'step="0.01" min="0" max="1" type="number">
+                            </li>
+                            <li>
+                                <div class="tooltip">
+                                    <label class="tooltip" for="hunter-gestation-period">Gestation Period: </label>
+                                    <span class="tooltiptext">The number of timesteps a hunter must remain stationary before divison is complete</span>
+                                </div>
+                                <input id="hunter-gestation-period" value="150" min='1' max="1000" type="number">
+                            </li>
+                            <li>
+                                <div class="tooltip">
+                                    <label for="hunter-nutrient-requirement">Reproduction Cost: </label>
+                                    <span class="tooltiptext">The number of eaters each hunter must consume to reproduce</span>
+                                </div>
+                                <input id="hunter-nutrient-requirement" value="10" min="1" max="1000" type="number">
                             </li>
                         </ul>
                     </div>
@@ -123,33 +176,41 @@
                 <h2>Welcome to the Digital Tidepool</h2>
 
                 <p>
-                    The digital tidepool is a cellular simulation that takes place entirely in your browser. Based on a set of inital parameters, the simulation
+                    The digital tidepool is a cellular simulation that takes place entirely in your browser. Based on a set of initial parameters, the simulation
                     will run its course to completion. As an observer of the tidepool, you have the power to choose the starting values of different parameters that
-                     influence the development of the environment.
+                     influence the development of the environment. Your challenge, should you accept it, is to bring sustainability to the tidepool.
                     <br>
                     <br>
-                    There are two forces at odds in the tidepool: Greens and Eaters. 
+                    There are three forces in precarious balance in the tidepool: Greens, Eaters and Hunters. 
                     <br>
                     <br>
                     Greens act as the foundation of the ecosystem. They might be some kind of mold, maybe bacteria, maybe slime, maybe code.
-                    It's difficult to say for sure. What we do know however is that like most living things, the Greens seek to grow and expand their 
-                    dominance over their environment. Given the opportunity, they will not hesistate to develop into the dominant lifeform of the tidepool.
+                    It's difficult to say for sure. What we do know however is like most living things, the Greens seek to grow and expand their 
+                    dominance over their environment. Given the opportunity, they will not hesitate to develop into the dominant life-form of the tidepool.
                     <br>
                     <br>
-                    Eaters act as the primary consumers of the ecosystem and survive by feeding on the Greens. While they may be short lived, their ability to
+                    Eaters act as the primary consumers of the ecosystem and survive by feeding on the Greens. While they may be short-lived, their ability to
                     undergo asexual reproduction makes them a powerful check on the Greens power in the tidepool - A single Eater allowed to reproduce has the
-                    potential to devestate the Green population... an act which may doom the Eaters themselves. 
+                    potential to devastate the Green population... an act which may doom the Eaters themselves. 
                     <br> 
                     <br>
-                    Eaters undergoing reproduction will remain stationary and adopt a dark blue shade. Desceased Eaters appear as a faded white husk of their original forms.
+                    Hunters are the secondary consumers of the tidepool and feed exclusively on Eaters. They see further and live longer than Eaters, but their reproduction takes longer and requires more nutrients. 
+                    As the apex species of the tidepool, they are a crucial check on the consumption of the Eaters. Should they go extinct, the rest of the food chain will surely follow suit. 
+                    <br> 
+                    <br>
+                    Eaters and Hunters undergoing reproduction will remain stationary and adopt a strong tint. Deceased Eaters appear as a faded white husk of their original forms.
                     <br>
                     <br>
-                    Under the "Parameters" tab, you can find several different parameters available to customize, as well as the starting populations of each species in the tidepool.
+                    Under the "Parameters" tab, you can find several parameters available to customize, as well as the starting populations of each species in the tidepool. 
+                    <br>
+                    <br>
+                    Your challenge as the observer is to bring the tidepool into a state of sustainability. There are an infinite number of solutions that may tip the balance of the tidepool into destruction,
+                    but only a small number that will bring harmony to the tidepool. Experiment with different parameters and see what you can come up with. 
                 </p>
                 <p>This project was inspired heavily by the  
                     <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Game of Life</a>,
                     created by the late John Conway. The game of life is a no-player game where a simple set of rules
-                     and starting conditions lead to complex and unpredicable interactions downstream. If you're interested in the developmental process behind
+                     and starting conditions lead to complex and unpredictable interactions downstream. If you're interested in the developmental process behind
                      this project, visit <a href="https://tracedelange.github.io/">my blog</a>. If you'd like access to the source code for the Digital Tidepool, you can find the github repository <a href="https://github.com/tracedelange/digital-tidepool">here</a>.
                     </p>
                     <img width="340vw" src="./assets/images/eater-lovey.png">
@@ -161,11 +222,13 @@
         </div>
         
         <link rel="stylesheet" href="assets/css/style.css">
+        <script src="javascripts/models/hunter.js"></script>
+        <script src="javascripts/models/green.js"></script>
+        <script src="javascripts/models/eater.js"></script>
         <script src="javascripts/pixi.min.js"></script>
         <script src="javascripts/globals.js"></script>
         <script src="javascripts/cookies.js"></script>
-        <script src="javascripts/models/green.js"></script>
-        <script src="javascripts/models/eater.js"></script>
+        <script src="javascripts/sim.js"></script>
         <script src="javascripts/index.js"></script>
     </body>
 </html>

@@ -1,10 +1,10 @@
-class Eater {
+class Hunter {
     static all = [];
     constructor(x,y, parentGen=0){
-        this.sprite = new PIXI.Sprite(PIXI.loader.resources["./assets/images/eater.png"].texture);
+        this.sprite = new PIXI.Sprite(PIXI.loader.resources["./assets/images/hunter.png"].texture);
 
-        this.sprite.width = (lineSpacing - margin)*eaterScale
-        this.sprite.height = (lineSpacing - margin)*eaterScale
+        this.sprite.width = (lineSpacing - margin)
+        this.sprite.height = (lineSpacing - margin)
         this.sprite.x = (lineSpacing+margin) + ((lineSpacing)*(x-1));
         this.sprite.y = (lineSpacing+margin) + ((lineSpacing)*(y-1)) + margin;
         
@@ -14,36 +14,36 @@ class Eater {
 
         this.id = `${x},${y}`
 
-        grid[x][y][0] = 2
+        grid[x][y][0] = 3
 
-        Eater.all.push(this)
+        Hunter.all.push(this)
 
         app.stage.addChild(this.sprite)
     }
 
-    static populateEaters = (n) => {
+    static populateHunters = (n) => {
         for (let i = 0; i < n; i++){
             let x = Math.floor(Math.random()*numCols)
             let y = Math.floor(Math.random()*numRows)
     
             if (grid[x][y][0] === 0) {
                 // setGridArray(x,y,0,2)
-                new Eater(x,y)
+                new Hunter(x,y)
             }
         }
     }
 
-    static processEaters = () => {
-        Eater.all.forEach(eater => {
-            eater.searchForPrey()
-            eater.moveEater()
-            eater.manageAge()
-            eater.reproduceEater()
-            calculateAverageGen()
+    static processHunters = () => {
+        Hunter.all.forEach(hunter => {
+            hunter.searchForPrey()
+            hunter.moveHunter()
+            hunter.manageAge()
+            hunter.reproduceHunter()
+            calculateAverageGenHunters()
         })
     }
 
-    moveEater = () => {
+    moveHunter = () => {
         let x = parseInt(this.id.split(',')[0])
         let y = parseInt(this.id.split(',')[1])
         let xMod;
@@ -98,11 +98,11 @@ class Eater {
             xMod = 0
             yMod = 0
         }
-        //Test if new desination location is already occupied by an eater. 
-        if (grid[x+xMod][y+yMod][0] === 2) {
-            yMod = 0
-            xMod = 0
-        }
+        // //Test if new desination location is already occupied by an eater. 
+        // if (grid[x+xMod][y+yMod][0] === 2) {
+        //     yMod = 0
+        //     xMod = 0
+        // }
         
         //Eater remains static if gestating
         if (this.gestation !== undefined) {
@@ -125,8 +125,20 @@ class Eater {
             Green.removeGreen(greenId)
             
             //Add a point of nutrition for the eater that removed the green
-            this.nutrients = this.nutrients+1
+            // this.nutrients = this.nutrients+1
             
+        } else if (grid[x+xMod][y+yMod][0] === 2) {
+
+            let eaterId = `${x+xMod},${y+yMod}`
+
+            let eater = Eater.all.find(ind => ind.id === eaterId)
+
+            if (eater !== undefined) {
+                eater.deleteEater()
+                this.nutrients = this.nutrients + 50
+            }
+
+
         }
         
         
@@ -143,87 +155,91 @@ class Eater {
             this.target = undefined;
         }
     }
-    
+
     searchForPrey = () => {
-        //determine if the given eater has a target, if not, scan the area and assign the eater target a target if one is found in the area.
-        //If none are found in the area, the eater will default to random movement 
+        //determine if the given hunter has a target, if not, scan the area and assign the hunter a target if one is found in the area.
+        //If none are found in the area, the hunter will default to random movement 
         if (this.target === undefined){
-            let prey = scanAreaForGreens(this.id, eaterPerception)
+            let prey = scanAreaForEaters(this.id, hunterPerception)
             if (prey.length !== 0){
                 let target = prey[Math.floor(Math.random()*prey.length)]
                 this.target = target.id
             }
         }
     }
-    
-    deleteEater = () => {
-        let x = parseInt(this.id.split(',')[0])
-        let y = parseInt(this.id.split(',')[1])
-        Eater.all.splice(Eater.all.indexOf(this), 1)
-        app.stage.removeChild(this.sprite)
-        grid[x][y][0] = 0
-    }
-    
     manageAge = () => {
         this.age = this.age + 1
-        if (this.age > eaterLifespan) { //Make death saving rolls
-            if (Math.random() < eaterDeathChance) {
-                this.deleteEater()
-                this.drawDeadEater()
+        if (this.age > hunterLifespan) { //Make death saving rolls
+            if (Math.random() < hunterDeathChance) {
+                this.deleteHunter()
+                // this.drawDeadEater()
             }
         }
     }
-    
-    drawDeadEater = () => {
-        
+    deleteHunter = () => {
         let x = parseInt(this.id.split(',')[0])
         let y = parseInt(this.id.split(',')[1])
-        
-        let deadEater = new PIXI.Sprite(PIXI.loader.resources["./assets/images/dead_eater.png"].texture)
-        
-        deadEater.width = (lineSpacing - margin)*eaterScale
-        deadEater.height = (lineSpacing - margin)*eaterScale
-        
-        deadEater.x = (lineSpacing+margin) + ((lineSpacing)*(x-1));
-        deadEater.y = (lineSpacing+margin) + ((lineSpacing)*(y-1)) + margin;
-        
-        deadEater.alpha = 0.5
-        
-        app.stage.addChild(deadEater)
+        Hunter.all.splice(Hunter.all.indexOf(this), 1)
+        app.stage.removeChild(this.sprite)
+        grid[x][y][0] = 0
     }
-    
-    reproduceEater = () => {
-        // first determine if eater is currently gestating, if not, roll for age and gestation. If it is, manage gestation period 
+
+    reproduceHunter = () => {
+        // first determine if hunter is currently gestating, if not, roll for age and gestation. If it is, manage gestation period 
         if (this.gestation === undefined) {
-            //if eater is sexually mature and has collected sufficient nutrients, roll a small chance for reproduction
-            if (this.age > (eaterLifespan*(1/3)) && this.nutrients > eaterNutrientRequirement) {
-                if (Math.random() < eaterReproductionRate) {
-                    //if sucessful splitting is possible, make the eater remain in the same location until gestation period reaches zero
-                    this.gestation = eaterGestationPeriod
-                    //Remove nutrients from eater 
-                    this.nutrients = this.nutrients - eaterNutrientRequirement
+            //if hunter is sexually mature and has collected sufficient nutrients, roll a small chance for reproduction
+            if (this.age > (hunterLifespan*(1/3)) && this.nutrients > hunterNutrientRequirement) {
+                // console.log('hunter capable of reproduing')
+                if (Math.random() < hunterReproductionRate) {
+                    //if sucessful splitting is possible, make the hunter remain in the same location until gestation period reaches zero
+                    this.gestation = hunterGestationPeriod
+                    //Remove nutrients from hunter 
+                    this.nutrients = this.nutrients - hunterNutrientRequirement
                 }
             }
         } else if (this.gestation > 0) {
-            // console.log(eater.gestation)
+            // console.log(hunter.gestation)
             this.gestation = this.gestation - 1
-            this.sprite.tint = "0x5D3FD3" 
+            this.sprite.tint = "0xDE3163" 
         } else if (this.gestation === 0) {
             //birth child and set gestation to undefined
             // console.log('child born')
             
             this.sprite.tint = '0xFFFFFF'
-            let childLocation = scanAreaForNewEater(this.id)
+            let childLocation = scanAreaForNewHunter(this.id)
             
-            new Eater(childLocation[0],childLocation[1], this.generation)
+            new Hunter(childLocation[0],childLocation[1], this.generation)
             // grid[childLocation[0]][gridLocation[1]][0] = 1
             
             this.gestation = undefined
         }
     } 
+
 }
 
-const scanAreaForNewEater = (id) => {
+const scanAreaForEaters = (id, range) => {
+    //Alternate approach: Filter through the list of greens and determine which are closest. OR Use .find to determine the first green that satisfies the callback
+    
+    let bx = parseInt(id.split(',')[0])
+    let by = parseInt(id.split(',')[1])
+    
+    let targets = Eater.all.filter(function(eater){
+        let gx = parseInt(eater.id.split(',')[0])
+        let gy = parseInt(eater.id.split(',')[1])
+        // console.log(green.id, id)
+        // console.log(Math.abs(bx-gx), Math.abs(by-gy))
+        if (Math.abs(bx-gx) < range && Math.abs(by-gy) < range){
+            
+            return eater
+        }
+    })
+
+    if (targets !== undefined) {
+        return targets //[Math.floor(Math.random()*targets.length)]
+    }
+}
+
+const scanAreaForNewHunter = (id) => {
     let pX = parseInt(id.split(',')[0])
     let pY = parseInt(id.split(',')[1])
 
@@ -231,11 +247,16 @@ const scanAreaForNewEater = (id) => {
     for (let xx = -1; xx < 2; xx++){
         for (let yy = -1; yy < 2; yy++){
 
-                if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)][0] !== 2){
+                if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)][0] !== 3){
                     let cX = Math.abs(xx+pX)
                     let cY = Math.abs(yy+pY)
-                    if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)][0] === 1) {
-                        // console.log('green exists at eater child spawn, removing eater')
+                    if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)][0] === 2) {
+                        console.log('Eater exists at Hunter child spawn, removing eater')
+                        let eater = Eater.all.find(ind => ind.id === `${cX},${cY}`)
+                        eater.deleteEater()
+                        return [cX, cY]
+                    } else if (grid[Math.abs(xx+pX)][Math.abs(yy+pY)][0] === 1) {
+                        console.log('green exists at eater child spawn, removing eater')
                         Green.removeGreen([cX,cY].join(','))
                         return [cX, cY]
                     } else {
@@ -246,35 +267,12 @@ const scanAreaForNewEater = (id) => {
     }
 }
 
-const scanAreaForGreens = (id, range) => {
-    //Alternate approach: Filter through the list of greens and determine which are closest. OR Use .find to determine the first green that satisfies the callback
-    
-    let bx = parseInt(id.split(',')[0])
-    let by = parseInt(id.split(',')[1])
-    
-    let targets = Green.all.filter(function(green){
-        let gx = parseInt(green.id.split(',')[0])
-        let gy = parseInt(green.id.split(',')[1])
-        // console.log(green.id, id)
-        // console.log(Math.abs(bx-gx), Math.abs(by-gy))
-        if (Math.abs(bx-gx) < range && Math.abs(by-gy) < range){
-            
-            return green
-        }
-    })
-
-    if (targets !== undefined) {
-        return targets //[Math.floor(Math.random()*targets.length)]
-    }
-}
-
-const calculateAverageGen = () => {
+const calculateAverageGenHunters = () => {
     let sum = 0
-    Eater.all.forEach(eater => {
-    sum = eater.generation + sum })
+    Hunter.all.forEach(hunter => {
+    sum = hunter.generation + sum })
 
-    let avgGen = sum/Eater.all.length
+    let avgGen = sum/Hunter.all.length
 
-    averageGen.innerText = `Average Eater Generation: ${(avgGen).toFixed(2)}`
+    averageHunterGen.innerText = `Average Hunter Generation: ${(avgGen).toFixed(2)}`
 }
-
