@@ -2,7 +2,18 @@
 
 ## Welcome to the digital-tidepool folks!
 
-he digital tidepool is a cellular simulation that takes place entirely in the browser. 
-Based on a set of initial parameters, the simulation will run its course to completion.
-As an observer of the tidepool, you have the power to choose the starting values of different parameters that influence the development of the environment. 
-Your challenge, should you accept it, is to bring sustainability to the tidepool.
+The digital tidepool is a cellular simulation that takes place entirely in the browser. This project was written almost entirely from scratch, excluding use of the PIXI 
+canvas library for drawing purposes. 
+
+If you'd like to experiment with the Digital-Tidepool you can visit [here](https://tracedelange.github.io/digital-tidepool/).
+
+The purpose of this project was to create a microcosome of nature and give users an opportunity to tweak, experiment and explore the different interactions that take place
+inside the simulation. Thematically, the intention of this project was to highlight the fragility of ecological balance in a simple and easily digestable system.
+
+This project was heavily inspired by the cellular automata featured in the Game of Life. Exploring the unpredictability of seemlingly simple systems is a key element being explored. 
+
+As it currently stands, there are three elements participating in the simulation:
+1. Greens, an anologue for primary producers
+2. Eaters, an anologue for primary consumers
+3. Hunters, an anologe for secondary consumers and apex predators of an ecosystem. 
+
