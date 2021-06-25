@@ -81,14 +81,22 @@ let app = new PIXI.Application({
     resolution: window.devicePixelRatio || 1
 });
 
+// font-family:Arial;
+// font-size:16px;
+// font-weight:bold;
+// font-style:italic;
+
 let messageStyle = new PIXI.TextStyle({
-    fontFamily: "Times New Roman",
+    fontFamily: "Arial",
     fontSize: Math.round(width/50),
     fill: "white",
     stroke: 'black',
     strokeThickness: 2,
     dropShadow: true,
-    // dropShadowColor: "#000000",
+
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    
     dropShadowBlur: 4,
     // dropShadowAngle: Math.PI / 6,
     // dropShadowDistance: 6,

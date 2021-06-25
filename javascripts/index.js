@@ -90,6 +90,7 @@ const startSim = () => {
     running = true
     
     getParameters()
+    bakeParameters()
 
     //adjust buttons
     initalGreenPopInput.disabled = true
@@ -132,7 +133,7 @@ const checkForExtinction = () => {
             return
         } else if (doomMessageShown === false) {
             const doomMessage = new PIXI.Text('Greens have gone extinct. As a result, all eaters will starve.', messageStyle)
-            doomMessage.x = width / 3 - ((width/3)*.20)
+            doomMessage.x = width / 3 - ((width/3)*.30)
             doomMessage.y = height / 2 - 18  
             doomMessage.id = 'ge'
             app.stage.addChild(doomMessage)
@@ -165,6 +166,9 @@ const checkForExtinction = () => {
     }
 }
 
+const addDoomMessage = (message, id) => {
+
+}
 
 
 const pauseSim = () => {
