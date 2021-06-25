@@ -7,7 +7,7 @@ canvas library for drawing purposes.
 
 If you'd like to experiment with the Digital-Tidepool you can visit [here](https://tracedelange.github.io/digital-tidepool/).
 
-The purpose of this project was to create a microcosome of nature and give users an opportunity to tweak, experiment and explore the different interactions that take place
+The purpose of this project was to create a microcosm of nature and give users an opportunity to tweak, experiment with and explore the different interactions that take place
 inside the simulation. Thematically, the intention of this project was to highlight the fragility of ecological balance in a simple and easily digestable system.
 
 This project was heavily inspired by the cellular automata featured in the Game of Life. Exploring the unpredictability of seemlingly simple systems is a key element being explored. 
