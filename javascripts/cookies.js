@@ -30,10 +30,15 @@ const bakeParameters = () => {
 
 const populateParametersFromCookies = () => {
     let cookie = document.cookie;
+    let parameters = cookie.split('; ').find(entry => {
+        return entry.split('=')[0] === 'parameters'
+        })
 
-    if (cookie !== '' && cookie !== 'parameters=') {
+    if (cookie !== '' && parameters !== 'parameters=') {
 
-        let data = JSON.parse(cookie.split('=')[1])
+
+        
+        let data = JSON.parse(parameters.split('=')[1])
 
         initalGreenPopInput.value = data['initalGreenPopulation'],
         initalEaterPopInput.value = data['initalEaterPopulation'],

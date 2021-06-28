@@ -1,6 +1,6 @@
 //Canvas scale and grid height constants 
 const gridScale = 20
-const widthInital = (document.body.clientWidth)*.96 
+const widthInital = (document.body.clientWidth)*.87 
 const height = ((document.body.clientHeight)*.89) - (((document.body.clientHeight)*.95) % gridScale)
 
 const margin = 1
@@ -20,6 +20,7 @@ const initalEaterPopInput = document.getElementById('eater-starting-pop')
 const initalHunterPopInput = document.getElementById('hunter-starting-pop')
 
 const gridConfig = document.getElementById('gridConfig')
+const parameterConfig = document.getElementById('parameter-override')
 const configSubmitButton = document.getElementById('config-submission-button')
 const pauseButton = document.getElementById('pause')
 const resumeButton = document.getElementById('resume')
@@ -40,6 +41,7 @@ const averageGen = document.getElementById('average-eater-generation')
 const hunterPop = document.getElementById('hunter-pop')
 const hunterGreenRatio = document.getElementById('hunter-eater-ratio')
 const averageHunterGen = document.getElementById('average-hunter-gen')
+const timeEntries = document.getElementById('entries')
 
 //DOM Items for Constant Declaration
 const getGreenGrowthRate = () => document.getElementById('green-growth-rate').value

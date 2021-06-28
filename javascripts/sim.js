@@ -25,6 +25,40 @@ const addButtonListeners = () => {
 
 }
 
+const validateInput = (node, min, max, minO, maxO) => {
+    node.addEventListener('change', function(){
+        if (node.value <= min){
+            node.value = minO
+        } else if (node.value > max) {
+            node.value = maxO
+        }
+    })
+}
+
+const addParameterValidators = () => {
+    validateInput(document.getElementById('green-growth-rate'), 0, 1, .1, 1)
+    validateInput(document.getElementById('eater-perception'), -1, 20, 0, 20)
+    validateInput(document.getElementById('eater-lifespan'), 10, 1000, 10, 1000)
+
+    validateInput(document.getElementById('eater-death-rate'), 0, 1, .1, 1)
+    validateInput(document.getElementById('eater-reproduction-rate'), 0, 1, .1, 1)
+    validateInput(document.getElementById('eater-gestation-period'), 1, 1000, 1, 1000)
+    validateInput(document.getElementById('eater-nutrient-requirement'), 1, 1000, 1, 1000)
+    
+    validateInput(document.getElementById('hunter-perception'), -1, 20, 0, 20)
+    validateInput(document.getElementById('hunter-lifespan'), 10, 1000, 10, 1000)
+    validateInput(document.getElementById('hunter-death-rate'), 0, 1, .1, 1)
+    validateInput(document.getElementById('hunter-nutrient-requirement'), 1, 1000, 1, 1000)
+    validateInput(document.getElementById('hunter-gestation-period'), 1, 1000, 1, 1000)
+    validateInput(document.getElementById('hunter-reproduction-rate'), 0, 1, .1, 1)
+
+    validateInput(initalGreenPopInput, 0, 1000, 1, 1000)
+    validateInput(initalEaterPopInput, 0, 100, 1, 100)
+    validateInput(initalHunterPopInput, 0, 50, 1, 50)
+    
+
+}
+
 const pauseSim = () => {
     //Update running variable to false to stop the game loop
     running = false
@@ -94,6 +128,51 @@ const updateStats = () => {
     
 }
 
+
+const submitTimestepRecord = () => {
+
+    let currentTime = parseInt(timestepNode.innerText.split(' ')[1])
+    let cookie = document.cookie;
+
+    console.log(parameters)
+
+
+    let timeEntry = document.createElement('li')
+    timeEntry.innerText = String(currentTime)
+
+    timeEntries.insertBefore(timeEntry, timeEntries.firstChild)
+
+    let records = cookie.split('; ').find(entry => {
+        return entry.split('=')[0] === 'durations'
+        })
+        
+    let recordsArray = Array(records.split('=')[1])
+
+    recordsArray.push(currentTime)
+
+    document.cookie = 'durations=' + recordsArray.join(',')
+
+}
+
+const populateTimestepRecord = () => {
+    let cookie = document.cookie;
+    let entries = cookie.split('; ').find(entry => {
+        return entry.split('=')[0] === 'durations'
+        })
+
+    entries = entries.split('=').splice(1,1)
+    entries[0].split(',').forEach((entry) => {
+        if (entry !== '') {
+            let timeEntry = document.createElement('li')
+            timeEntry.innerText = entry
+            timeEntries.insertBefore(timeEntry, timeEntries.firstChild)
+        }
+    })
+
+}
+
+
+
 //Main config 
 const mainConfig = () => {
     
@@ -101,7 +180,7 @@ const mainConfig = () => {
 
     canvasDiv.appendChild(app.view);
 
-    gridConfig.addEventListener('submit', function(event){
+    gridConfig.addEventListener('submit', function(event){ //CHANGE THIS TO ON BUTTON SUBMIT THIS FORM AS WELL AS PARAMETER FORM
         
         event.preventDefault()
         
@@ -110,19 +189,22 @@ const mainConfig = () => {
         Eater.populateEaters(initalEaterPopInput.value)
         
         Green.populateGreens(initalGreenPopInput.value)
-
-        
+       
         parameterDiv.style.display = 'none'
-        // parameterButton.disabled = true
 
-
-        startSim()
-        
+        startSim() 
     })
 
-    populateParametersFromCookies()
 
-    addButtonListeners()
+
+    populateParametersFromCookies();
+
+    populateTimestepRecord();
+
+    addButtonListeners();
+
+    addParameterValidators();
+
 
 }
 
@@ -149,14 +231,17 @@ const checkForExtinction = () => {
     if (Green.all.length === 0 && doomMessageShown === false) {
         addDoomMessage('Greens have gone extinct. As a result, Eaters and Hunters will starve.', 'ge', (0.75) )
         doomMessageShown = true
+        submitTimestepRecord()
     }
     if (Eater.all.length === 0 && doomMessageShown === false) {
         addDoomMessage('Eaters have gone extinct. As a result, Hunters will starve and Greens will dominate the tidepool unchecked.', 'ee', (0.8) )
         doomMessageShown = true
+        submitTimestepRecord()
     } 
     if (Hunter.all.length === 0 && doomMessageShown === false) {
         addDoomMessage('Hunters have gone extinct. As a result, Eaters will reproduce unchecked and exceed the carrying capacity of the Greens. They will starve.', 'he', (0.95))
         doomMessageShown = true
+        submitTimestepRecord()
     } 
 
     if (doomMessageShown === true) {
@@ -172,6 +257,26 @@ const checkForExtinction = () => {
             addDoomMessage('Hunters have gone extinct. As a result, Eaters will reproduce unchecked. They will consume all of their resources and starve.', 'he', (0.95) )
         }
     }
+
+    //Check for endgame scenarios
+
+    if (Green.all.length === numCols*numRows){
+        let message = app.stage.children.find(child => child.message === 'here!')
+        app.stage.removeChild(message)
+        addDoomMessage('Greens have dominated the tidepool.', 'ee', (0))
+        pauseSim()
+        resumeButton.disabled = true
+        // submitTimestepRecord()    
+    } 
+
+    if (Eater.all.length === 0 && Hunter.all.length === 0 && Eater.all.length) {
+        pauseSim()
+        resumeButton.disabled = true
+        // submitTimestepRecord()    
+    }
+
+
+
 }
 
 const addDoomMessage = (message, id, positionMod) => {
@@ -181,7 +286,7 @@ const addDoomMessage = (message, id, positionMod) => {
     doomMessage.id = id
     doomMessage.message = 'here!'
     app.stage.addChild(doomMessage)
-    console.log('doom Message added')
+    // console.log('doom Message added')
     doomMessageShown = true
 }
 

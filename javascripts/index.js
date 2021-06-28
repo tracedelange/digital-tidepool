@@ -1,24 +1,4 @@
 
-//General drawing functions
-// const drawLine = function(startX, startY, endX, endY) {
-//     let line = new PIXI.Graphics();
-//     line.lineStyle(1, 0x663333, 1);
-//     line.moveTo(startX, startY);
-//     line.lineTo(endX, endY);
-//     line.x = 0;
-//     line.y = 0;
-//     line.alpha = 0.5;
-//     app.stage.addChild(line);
-// }
-
-// const drawGrid = function(){
-//     for (let i = 0; i < numRows + 1; i++){
-//         drawLine(0,lineSpacing + (lineSpacing*i)+1,width,lineSpacing + (lineSpacing*i)+1)
-//     }
-//     for (let i = 0; i < numCols; i++){
-//         drawLine((lineSpacing) + ((lineSpacing)*i)+1,0,lineSpacing + ((lineSpacing)*i)+1,height)
-//     }
-// }
 
 
 
@@ -42,94 +22,6 @@ const setGridIndex = (x,y,color,id) => {
 const setGridArray = (x,y,index,value) => {
     grid[x][y][index] = value
 }
-
-// const populateParametersFromJson = (source) => {
-//     fetch(`http://localhost:3000/${source}`)
-//     .then(response => response.json())
-//     .then(data => {
-//         initalGreenPopInput.value = data['initalGreenPopulation'],
-//         initalEaterPopInput.value = data['initalEaterPopulation'],
-//         document.getElementById('green-growth-rate').value = data['greenGrowthRate']
-//         document.getElementById('eater-perception').value = data['eaterPerception']
-//         document.getElementById('eater-lifespan').value = data['eaterLifespan']
-//         document.getElementById('eater-death-rate').value = data['eaterDeathChance']
-//         document.getElementById('eater-reproduction-rate').value = data['eaterReproductionRate']
-//         document.getElementById('eater-gestation-period').value = data['eaterGestationPeriod']
-//         document.getElementById('eater-nutrient-requirement').value = data['eaterNutrientRequirement']
-//     })
-// }
-
-// const submitParamsToJson = () => {
-//     const paramData = {
-//         "initalGreenPopulation": initalGreenPopInput.value,
-//         "initalEaterPopulation": initalEaterPopInput.value,
-//         'greenGrowthRate' : document.getElementById('green-growth-rate').value,
-//         'eaterPerception' : document.getElementById('eater-perception').value,
-//         'eaterLifespan' : document.getElementById('eater-lifespan').value,
-//         'eaterDeathChance' : document.getElementById('eater-death-rate').value,
-//         'eaterReproductionRate' : document.getElementById('eater-reproduction-rate').value,
-//         'eaterGestationPeriod' : document.getElementById('eater-gestation-period').value,
-//         'eaterNutrientRequirement' : document.getElementById('eater-nutrient-requirement').value
-//     }
-
-//     const configurationObject = {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           "Accept": "application/json"
-//         },
-//         body: JSON.stringify(paramData)
-//       };
-      
-//     fetch("http://localhost:3000/currentParameters", configurationObject); 
-// }
-
-
-// const checkForExtinction = () => {
-//     if (Green.all.length === 0) {
-//         if (Eater.all.length === 0 && doomMessageShown === true) {
-//             pauseSim()
-//             resumeButton.disabled = true
-//             app.stage.children.find(child => child.id === 'ge').text = 'Greens have gone extinct. As a result, all eaters have starved.'
-//             return
-//         } else if (doomMessageShown === false) {
-//             const doomMessage = new PIXI.Text('Greens have gone extinct. As a result, all eaters will starve.', messageStyle)
-//             doomMessage.x = width / 3 - ((width/3)*.30)
-//             doomMessage.y = height / 2 - 18  
-//             doomMessage.id = 'ge'
-//             app.stage.addChild(doomMessage)
-//             // console.log('This should only appear once')
-//             doomMessageShown = true
-//         }
-//     }
-//     if (Eater.all.length === 0) { 
-//         if (Green.all.length === (numCols*numRows) && doomMessageShown === true) {
-//             pauseSim()
-//             resumeButton.disabled = true
-    
-//             app.stage.children.find(child => child.id === 'ee').text = 'Eaters have gone extinct. As a result, Greens have dominated the tidepool unchecked.'
-//             return
-//         } else if (doomMessageShown === false){
-//             const doomMessage = new PIXI.Text('Eaters have gone extinct. As a result, Greens will dominate the tidepool unchecked.', messageStyle)
-//             doomMessage.x = width / 3 - ((width/3)*.30)
-//             doomMessage.y = height / 2 - 18
-//             doomMessage.id = 'ee'
-//             app.stage.addChild(doomMessage)
-//             doomMessageShown = true
-//         }
-//         let message = app.stage.children.find(child => child.id === 'ee')
-//         app.stage.removeChild(message)
-//         const doomMessage = new PIXI.Text('Eaters have gone extinct. As a result, Greens will dominate the tidepool unchecked.', messageStyle)
-//         doomMessage.x = width / 3 - ((width/3)*.30)
-//         doomMessage.y = height / 2 - 18
-//         doomMessage.id = 'ee'
-//         app.stage.addChild(doomMessage)
-//     }
-// }
-
-// const addDoomMessage = (message, id) => {
-
-// }
 
 
 

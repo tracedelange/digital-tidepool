@@ -16,7 +16,7 @@
     <title>Digital Tidepool</title>
 </head>
 <body>
-    
+
         <div class='box'>
             <form action="#" id="gridConfig">
                 <label for="green-starting-pop">Inital Population Size of Greens: </label>
@@ -36,7 +36,6 @@
                 <button id='reset' disabled='true'>Reset</button> 
                 <button id='parameter-button'>Parameters</button> 
                 <button id='about'>About</button> 
-                
             </div>
             <div id="stats">
                 <ul>
@@ -54,7 +53,7 @@
         <div id="parameters">
             <div class='content'>
                 <h2>Custom Parameters:</h2>
-                <form id='parameter-override'>
+                <form id='parameter-override' action='#'>
                     <div class='flexItem' id="green-params">
                         <label for="green-params">Green Parameters:</label>
                         <ul>
@@ -63,7 +62,7 @@
                                     <label for="green-growth-rate: ">Growth Rate</label>
                                     <span class="tooltiptext">The rate at which each green reproduces. A value of 1 results in each green reproducing each timestep, a value of zero results in zero reproduction.</span>
                                 </div>
-                                <input id="green-growth-rate" value="0.1" min="0" max="1" step="0.01" type="number">
+                                <input id="green-growth-rate" value="0.1" min="0" max="1" step="0.1" type="number">
                             </li>
                         </ul>
                     </div>
@@ -161,6 +160,7 @@
                             </li>
                         </ul>
                     </div>
+                <!-- </form> -->
                     <div class='flexItem'>
                         <button id="set-params-default" type="submit">Reset Default Values</button>
                         <p>Mouse over parameters for more information on how they influence the simulation</p>
@@ -217,8 +217,23 @@
                     <p>Thank you very much for stopping by!</p>
             </div>
         </div>
-        <div id="canvas">
 
+        <div id="canvas-score-container"></div>
+
+        <div id="canvas">
+            <div class="sidenav">
+                <h2> Score: </h2>
+                <h3># of timesteps equilibrium maintained</h3>
+                <div id="duration-entries">
+                    <ul id="entries">
+                        <!-- <li>3330 </li> -->
+
+                    </ul>
+                </div>
+              </div>
+        </div>
+        
+        
         </div>
         
         <link rel="stylesheet" href="assets/css/style.css">
