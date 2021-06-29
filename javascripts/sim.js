@@ -134,7 +134,7 @@ const submitTimestepRecord = () => {
     let currentTime = parseInt(timestepNode.innerText.split(' ')[1])
     let cookie = document.cookie;
 
-    console.log(parameters)
+    // console.log(parameters)
 
 
     let timeEntry = document.createElement('li')
@@ -146,12 +146,15 @@ const submitTimestepRecord = () => {
         return entry.split('=')[0] === 'durations'
         })
         
-    let recordsArray = Array(records.split('=')[1])
-
-    recordsArray.push(currentTime)
-
-    document.cookie = 'durations=' + recordsArray.join(',')
-
+    if (records === undefined){
+        document.cookie = 'durations=' + currentTime
+    } else {
+        let recordsArray = Array(records.split('=')[1])
+    
+        recordsArray.push(currentTime)
+    
+        document.cookie = 'durations=' + recordsArray.join(',')
+    }
 }
 
 const populateTimestepRecord = () => {
@@ -160,15 +163,16 @@ const populateTimestepRecord = () => {
         return entry.split('=')[0] === 'durations'
         })
 
-    entries = entries.split('=').splice(1,1)
-    entries[0].split(',').forEach((entry) => {
-        if (entry !== '') {
-            let timeEntry = document.createElement('li')
-            timeEntry.innerText = entry
-            timeEntries.insertBefore(timeEntry, timeEntries.firstChild)
-        }
-    })
-
+    if (entries !== undefined){
+        entries = entries.split('=').splice(1,1)
+        entries[0].split(',').forEach((entry) => {
+            if (entry !== '') {
+                let timeEntry = document.createElement('li')
+                timeEntry.innerText = entry
+                timeEntries.insertBefore(timeEntry, timeEntries.firstChild)
+            }
+        })
+    }
 }
 
 

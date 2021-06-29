@@ -34,9 +34,10 @@ const populateParametersFromCookies = () => {
         return entry.split('=')[0] === 'parameters'
         })
 
-    if (cookie !== '' && parameters !== 'parameters=') {
+    console.log(parameters)
+    if (cookie !== '' && parameters !== undefined && parameters !== 'parameters=') {
 
-
+        // console.log(parameters)
         
         let data = JSON.parse(parameters.split('=')[1])
 
