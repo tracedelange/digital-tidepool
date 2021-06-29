@@ -1,24 +1,76 @@
 {
   "DefaultParameters": {
-    "initalGreenPopulation": "50",
-    "initalEaterPopulation": "5",
-    "greenGrowthRate": "0.03",
-    "eaterPerception": "4",
-    "eaterLifespan": "300",
-    "eaterDeathChance": "0.5",
-    "eaterReproductionRate": "0.2",
-    "eaterGestationPeriod": "50",
-    "eaterNutrientRequirement": "50"
+    "initalGreenPopulation": "100",
+    "initalEaterPopulation": "10",
+    "initalHunterPopulation": "1",
+    "greenGrowthRate": "0.1",
+    "eaterPerception": "5",
+    "eaterLifespan": "200",
+    "eaterDeathChance": "0.1",
+    "eaterReproductionRate": "0.1",
+    "eaterGestationPeriod": "35",
+    "eaterNutrientRequirement": "50",
+    "hunterPerception": "8",
+    "hunterLifespan": "500",
+    "hunterDeathChance": "0.01",
+    "hunterNutrientRequirement": "10",
+    "hunterGestationPeriod": "150",
+    "hunterReproductionRate": "1"
   },
   "currentParameters": {
-    "initalGreenPopulation": "50",
-    "initalEaterPopulation": "5",
-    "greenGrowthRate": ".1",
-    "eaterPerception": "4",
-    "eaterLifespan": "300",
-    "eaterDeathChance": "0.5",
-    "eaterReproductionRate": "0.2",
-    "eaterGestationPeriod": "50",
-    "eaterNutrientRequirement": "50"
-  }
+    "initalGreenPopulation": "100",
+    "initalEaterPopulation": "10",
+    "initalHunterPopulation": "1",
+    "greenGrowthRate": "0.1",
+    "eaterPerception": "5",
+    "eaterLifespan": "200",
+    "eaterDeathChance": "0.1",
+    "eaterReproductionRate": "0.1",
+    "eaterGestationPeriod": "35",
+    "eaterNutrientRequirement": "50",
+    "hunterPerception": "8",
+    "hunterLifespan": "500",
+    "hunterDeathChance": "0.01",
+    "hunterNutrientRequirement": "10",
+    "hunterGestationPeriod": "150",
+    "hunterReproductionRate": "1"
+  },
+  "previousTimesteps": [
+    {
+      "length": 526,
+      "id": 1
+    },
+    {
+      "length": 600,
+      "id": 2
+    },
+    {
+      "length": 273,
+      "id": 3
+    },
+    {
+      "length": 713,
+      "id": 4
+    },
+    {
+      "length": 130,
+      "id": 5
+    },
+    {
+      "length": 11,
+      "id": 6
+    },
+    {
+      "length": 11,
+      "id": 7
+    },
+    {
+      "length": 11,
+      "id": 8
+    },
+    {
+      "length": 11,
+      "id": 9
+    }
+  ]
 }

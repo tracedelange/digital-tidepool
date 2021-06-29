@@ -48,10 +48,11 @@ const displayParams = () => {
 }
 
 const resetDefaultParameters = () => { 
-    // populateParametersFromJson('DefaultParameters')
+    populateParametersFromJson('DefaultParameters')
+    
 
-    document.cookie = 'parameters='
-    location.reload()
+    // document.cookie = 'parameters='
+    // location.reload()
 }
 
 

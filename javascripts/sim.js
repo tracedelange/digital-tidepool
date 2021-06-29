@@ -8,7 +8,7 @@ const addButtonListeners = () => {
     resetButton.addEventListener('click', function (){
         //On reset clicked, package all parameter data and submit it to a json server
         //Once completed, reload the page. 
-        bakeParameters()
+        submitParamsToJson()
         resetSim()
     })
     aboutButton.addEventListener('click', function(){
@@ -82,7 +82,8 @@ const startSim = () => {
     running = true
     
     getParameters()
-    bakeParameters()
+    // bakeParameters()
+    submitParamsToJson()
 
     //adjust buttons
     initalGreenPopInput.disabled = true
@@ -128,63 +129,128 @@ const updateStats = () => {
     
 }
 
+const populateTimestepRecord = () => {
+    // let cookie = document.cookie;
+
+    fetch(`http://localhost:3000/previousTimesteps`)
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(entry => {
+            let timeEntry = document.createElement('li')
+            timeEntry.innerText = entry.length
+            timeEntries.insertBefore(timeEntry, timeEntries.firstChild)
+        });
+    })
+}
 
 const submitTimestepRecord = () => {
 
     let currentTime = parseInt(timestepNode.innerText.split(' ')[1])
-    let cookie = document.cookie;
-
-    // console.log(parameters)
-
+    
+    let data = {
+        length: currentTime
+    }
 
     let timeEntry = document.createElement('li')
-    timeEntry.innerText = String(currentTime)
-
+    timeEntry.innerText = data.length
     timeEntries.insertBefore(timeEntry, timeEntries.firstChild)
 
-    let records = cookie.split('; ').find(entry => {
-        return entry.split('=')[0] === 'durations'
-        })
+    const configurationObject = {
+
+
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify(data)
+    };
+
+    fetch("http://localhost:3000/previousTimesteps", configurationObject)
+    .then(function(response) {
+        return response.json();
+      })
+    .then(function(object) {
+        console.log(object);
+      })
+    .catch(function(error) {
+        alert("Bad things! Ragnarők!");
+        console.log(error.message);
+      });  
+
+}
+
+const submitParamsToJson = () => {
+    const paramData = {
+        "initalGreenPopulation": initalGreenPopInput.value,
+        "initalEaterPopulation": initalEaterPopInput.value,
+        "initalHunterPopulation": initalHunterPopInput.value,
+
+        'greenGrowthRate' : getGreenGrowthRate(),
+
+        'eaterPerception' : getEaterPerception(),
+        'eaterLifespan' : getEaterLifespan(),
+        'eaterDeathChance' : getEaterDeathChance(),
+        'eaterReproductionRate' : getEaterReproductionRate(),
+        'eaterGestationPeriod' : getEaterGestationPeriod(),
+        'eaterNutrientRequirement' : getEaterNutrientRequirement(),
         
-    if (records === undefined){
-        document.cookie = 'durations=' + currentTime
-    } else {
-        let recordsArray = Array(records.split('=')[1])
-    
-        recordsArray.push(currentTime)
-    
-        document.cookie = 'durations=' + recordsArray.join(',')
+        'hunterPerception' : getHunterPerception(),
+        'hunterLifespan' : getHunterLifespan(),
+        'hunterDeathChance' : getHunterDeathChance(),
+        'hunterNutrientRequirement' : getHunterNutrientRequirement(),
+        'hunterGestationPeriod' : getHunterGestationPeriod(),
+        'hunterReproductionRate' : getHunterReproductionRate() 
     }
+
+    const configurationObject = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(paramData)
+      };
+      
+    fetch("http://localhost:3000/currentParameters", configurationObject); 
 }
 
-const populateTimestepRecord = () => {
-    let cookie = document.cookie;
-    let entries = cookie.split('; ').find(entry => {
-        return entry.split('=')[0] === 'durations'
-        })
-
-    if (entries !== undefined){
-        entries = entries.split('=').splice(1,1)
-        entries[0].split(',').forEach((entry) => {
-            if (entry !== '') {
-                let timeEntry = document.createElement('li')
-                timeEntry.innerText = entry
-                timeEntries.insertBefore(timeEntry, timeEntries.firstChild)
-            }
-        })
-    }
+const populateParametersFromJson = (source='currentParameters') => {
+    fetch(`http://localhost:3000/${source}`)
+    .then(response => response.json())
+    .then(data => {
+        initalGreenPopInput.value = data['initalGreenPopulation'],
+        initalEaterPopInput.value = data['initalEaterPopulation'],
+        initalHunterPopInput.value = data['initalHunterPopulation']
+        document.getElementById('green-growth-rate').value = data['greenGrowthRate']
+        document.getElementById('eater-perception').value = data['eaterPerception']
+        document.getElementById('eater-lifespan').value = data['eaterLifespan']
+        document.getElementById('eater-death-rate').value = data['eaterDeathChance']
+        document.getElementById('eater-reproduction-rate').value = data['eaterReproductionRate']
+        document.getElementById('eater-gestation-period').value = data['eaterGestationPeriod']
+        document.getElementById('eater-nutrient-requirement').value = data['eaterNutrientRequirement']
+        document.getElementById('hunter-perception').value = data['hunterPerception']
+        document.getElementById('hunter-lifespan').value = data['hunterLifespan']
+        document.getElementById('hunter-death-rate').value = data['hunterDeathChance']
+        document.getElementById('hunter-nutrient-requirement').value = data['hunterNutrientRequirement']
+        document.getElementById('hunter-gestation-period').value = data['hunterGestationPeriod']
+        document.getElementById('hunter-reproduction-rate').value = data['hunterReproductionRate']
+    })
 }
+
 
 
 
 //Main config 
 const mainConfig = () => {
     
-    // populateParametersFromJson('currentParameters')
+    populateParametersFromJson()
 
     canvasDiv.appendChild(app.view);
 
-    gridConfig.addEventListener('submit', function(event){ //CHANGE THIS TO ON BUTTON SUBMIT THIS FORM AS WELL AS PARAMETER FORM
+    gridConfig.addEventListener('submit', function(event){ 
+
+        submitParamsToJson()
         
         event.preventDefault()
         
@@ -201,7 +267,7 @@ const mainConfig = () => {
 
 
 
-    populateParametersFromCookies();
+    // populateParametersFromJson();
 
     populateTimestepRecord();
 
