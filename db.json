@@ -36,41 +36,6 @@
     "hunterReproductionRate": "1"
   },
   "previousTimesteps": [
-    {
-      "length": 526,
-      "id": 1
-    },
-    {
-      "length": 600,
-      "id": 2
-    },
-    {
-      "length": 273,
-      "id": 3
-    },
-    {
-      "length": 713,
-      "id": 4
-    },
-    {
-      "length": 130,
-      "id": 5
-    },
-    {
-      "length": 11,
-      "id": 6
-    },
-    {
-      "length": 11,
-      "id": 7
-    },
-    {
-      "length": 11,
-      "id": 8
-    },
-    {
-      "length": 11,
-      "id": 9
-    }
+    
   ]
 }
